@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ORATORS' CLUB — imagine</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Serif:ital@1&family=Inter+Tight:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            paper: '#F6F4EB',
+            ink: '#101010',
+            acid: '#CBFF54',
+            raspberry: '#FF0099',
+            cyanpop: '#26B0FF',
+            mintpop: '#00A859',
+            purplepop: '#C072F8',
+            yellowpop: '#FFE600',
+            orangepop: '#FF7A00',
+            whatsapp: '#25D366'
+          },
+          fontFamily: {
+            poplar: ['"Anton"', 'Impact', '"Arial Black"', 'sans-serif'],
+            sans: ['"Inter Tight"', 'system-ui', '-apple-system', 'sans-serif'],
+            serifItalic: ['"Instrument Serif"', 'Georgia', 'serif'],
+            mono: ['"Space Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg-canvas: #F6F4EB;
+      --bg-card: #FFFFFF;
+      --bg-muted: #ECE9DC;
+      --text-main: #101010;
+      --border-main: #101010;
+      --shadow-main: #101010;
+      --dot-color: rgba(16, 16, 16, 0.22);
+    }
+
+    html.dark {
+      --bg-canvas: #111115;
+      --bg-card: #1C1C22;
+      --bg-muted: #272730;
+      --text-main: #F5F4EE;
+      --border-main: #F5F4EE;
+      --shadow-main: #000000;
+      --dot-color: rgba(245, 244, 238, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;
+      user-select: none;
+    }
+
+    .font-poplar {
+      font-family: 'Anton', Impact, 'Arial Black', sans-serif;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+      line-height: 0.96;
+    }
+
+    /* Neo-Brutalist Surfaces & Borders */
+    .nb-surface {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border: 3px solid var(--border-main);
+      box-shadow: 4px 4px 0px var(--shadow-main);
+    }
+
+    .nb-surface-sm {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border: 2.5px solid var(--border-main);
+      box-shadow: 3px 3px 0px var(--shadow-main);
+    }
+
+    .nb-muted {
+      background-color: var(--bg-muted);
+      color: var(--text-main);
+    }
+
+    .nb-btn {
+      cursor: pointer;
+      transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease, background-color 0.14s ease;
+    }
+    .nb-btn:hover {
+      transform: translate(-1.5px, -1.5px);
+    }
+    .nb-btn:active {
+      transform: translate(2px, 2px) !important;
+      box-shadow: 1px 1px 0px var(--shadow-main) !important;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Infinite Canvas Viewport */
+    #canvas-viewport {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+      background-color: var(--bg-canvas);
+      background-image: radial-gradient(var(--dot-color) 1.5px, transparent 1.5px);
+      background-size: 32px 32px;
+    }
+    #canvas-viewport.panning { cursor: grabbing; }
+
+    #canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .canvas-node {
+      position: absolute;
+      pointer-events: auto;
+      transform: translate(-50%, -50%);
+      will-change: left, top, transform;
+    }
+
+    /* Gelato Sticker Hashtag Hubs */
+    .hub-node {
+      cursor: pointer;
+      z-index: 25;
+      filter: drop-shadow(5px 6px 0px var(--shadow-main));
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease, opacity 0.22s ease;
+    }
+    .hub-node:hover {
+      z-index: 35;
+      filter: drop-shadow(8px 9px 0px var(--shadow-main)) brightness(1.03);
+    }
+    .hub-node.dragging {
+      cursor: grabbing;
+      z-index: 90 !important;
+      transition: none !important;
+    }
+    .hub-node.drop-target {
+      filter: drop-shadow(0px 0px 18px #CBFF54) drop-shadow(6px 7px 0px #101010) brightness(1.08);
+      z-index: 85 !important;
+    }
+
+    .gelato-oval {
+      border-radius: 50%;
+      padding: 22px 38px;
+      border: 3.5px solid #101010;
+      position: relative;
+      transform: rotate(-2deg);
+    }
+    .gelato-oval::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 2px solid #101010;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .gelato-square {
+      border-radius: 12px;
+      padding: 20px 28px;
+      border: 3.5px solid #101010;
+      position: relative;
+      transform: rotate(2deg);
+    }
+    .gelato-square::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 2px solid #101010;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .gelato-hex {
+      padding: 24px 36px;
+      clip-path: polygon(14% 0%, 86% 0%, 100% 50%, 86% 100%, 14% 100%, 0% 50%);
+    }
+    .gelato-hex-inner {
+      border-top: 2.5px solid #101010;
+      border-bottom: 2.5px solid #101010;
+      padding: 6px 10px;
+    }
+
+    .gelato-pill {
+      border-radius: 999px;
+      padding: 18px 34px;
+      border: 3.5px solid #101010;
+      position: relative;
+      transform: rotate(1.5deg);
+    }
+    .gelato-pill::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 2px solid #101010;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    /* Visual Idea Card */
+    .pin-node {
+      width: 214px;
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border: 3px solid var(--border-main);
+      border-radius: 16px;
+      padding: 8px;
+      box-shadow: 5px 5px 0px var(--shadow-main);
+      cursor: grab;
+      z-index: 15;
+      transition: box-shadow 0.16s ease, border-color 0.16s ease, opacity 0.22s ease, outline 0.15s ease;
+    }
+    .pin-node:hover {
+      box-shadow: 8px 8px 0px var(--shadow-main);
+      z-index: 40;
+    }
+    .pin-node.dragging {
+      cursor: grabbing;
+      box-shadow: 12px 12px 0px var(--shadow-main);
+      z-index: 95 !important;
+      transition: none !important;
+    }
+    .pin-node.mega-hyped {
+      border-color: #FF0099;
+      box-shadow: 6px 6px 0px #FF0099;
+    }
+    .pin-node.selected-pin {
+      outline: 3.5px solid #26B0FF;
+      box-shadow: 7px 7px 0px #26B0FF;
+      z-index: 48;
+    }
+    .pin-node.search-dimmed,
+    .hub-node.search-dimmed,
+    .cable-group.search-dimmed {
+      opacity: 0.14 !important;
+      filter: grayscale(0.85);
+    }
+    .pin-node.search-match {
+      outline: 3.5px solid #CBFF54;
+      z-index: 45;
+    }
+
+    /* Hype Pill States */
+    .hype-pill {
+      cursor: pointer;
+      transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.14s ease;
+    }
+    .hype-pill:hover { transform: scale(1.08); }
+    .hype-pill:active { transform: scale(0.94); }
+    @keyframes hypePop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.28) rotate(-4deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .hype-animate {
+      animation: hypePop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Cable Anchor Eyelet */
+    .pin-anchor-port {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 2.5px solid #101010;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* SVG Cable Highlighting */
+    .cable-group {
+      transition: opacity 0.18s ease;
+    }
+    .cable-group.active .cable-core {
+      stroke-width: 4.4 !important;
+      filter: drop-shadow(0 0 4px rgba(203, 255, 84, 0.75));
+    }
+    .cable-group.active .cable-outline {
+      stroke-width: 7.5 !important;
+    }
+
+    /* Choreographed Intro Curtain */
+    #intro-curtain {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background-color: #101010;
+      background-image: radial-gradient(rgba(203, 255, 84, 0.16) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      will-change: transform, opacity;
+      transition: transform 0.62s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+    }
+    #intro-curtain.hide-curtain {
+      transform: translate3d(0, -104%, 0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes introPopIn {
+      0% { opacity: 0; transform: translate3d(0, 22px, 0) scale(0.92); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @keyframes introStickerIn {
+      0% { opacity: 0; transform: translate3d(0, 14px, 0) rotate(-8deg) scale(0.85); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) rotate(-3deg) scale(1); }
+    }
+    @keyframes introProgress {
+      0% { transform: scaleX(0.08); }
+      100% { transform: scaleX(1); }
+    }
+    @keyframes spinAsterisk {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .intro-badge { animation: introPopIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .intro-title { animation: introPopIn 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both; }
+    .intro-pill  { animation: introStickerIn 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.16s both; }
+    .intro-bar   { transform-origin: left center; animation: introProgress 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .spin-asterisk { animation: spinAsterisk 14s linear infinite; }
+
+    /* Dropzone Overlay */
+    #canvas-drop-overlay {
+      position: fixed;
+      inset: 66px 16px 16px 16px;
+      z-index: 45;
+      border: 4px dashed #CBFF54;
+      background: rgba(16, 16, 16, 0.78);
+      backdrop-filter: blur(4px);
+      border-radius: 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    #canvas-drop-overlay.active { display: flex; }
+
+    /* Rubber-Band Marquee Selection Box */
+    #marquee-box {
+      position: fixed;
+      border: 2.5px dashed #26B0FF;
+      background: rgba(38, 176, 255, 0.14);
+      pointer-events: none;
+      z-index: 80;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================================== -->
+  <!-- 1. CHOREOGRAPHED 60FPS INTRO CURTAIN                                  -->
+  <!-- ===================================================================== -->
+  <div id="intro-curtain" onclick="hideIntroCurtain()">
+    <div class="absolute top-8 left-8 sm:left-16 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-yellowpop border-[3px] border-ink flex items-center justify-center spin-asterisk pointer-events-none">
+      <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12">
+        <path d="M42 10 H58 V38 L82 24 L90 38 L66 52 L90 66 L82 80 L58 66 V94 H42 V66 L18 80 L10 66 L34 52 L10 38 L18 24 L42 38 Z" fill="#FFE600" stroke="#101010" stroke-width="6"/>
+      </svg>
+    </div>
+
+    <div class="absolute bottom-10 right-8 sm:right-16 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-orangepop border-[3px] border-ink flex items-center justify-center rotate-6 pointer-events-none">
+      <svg viewBox="0 0 100 100" class="w-10 h-10 sm:w-12 sm:h-12">
+        <polygon points="50,10 82,50 50,90 18,50" fill="none" stroke="#101010" stroke-width="7"/>
+        <polygon points="50,28 66,50 50,72 34,50" fill="none" stroke="#101010" stroke-width="5"/>
+      </svg>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center px-6 text-center">
+      <div class="intro-badge mb-2 px-3.5 py-1 rounded-full bg-white text-ink font-mono text-[10px] font-bold tracking-widest uppercase border-2 border-ink">
+        MJCET • DEPT. OF ENGLISH
+      </div>
+      <h1 class="intro-title font-poplar text-[4.5rem] sm:text-[7.5rem] text-white leading-none drop-shadow-[6px_6px_0px_#000]">
+        ORATORS
+      </h1>
+      <div class="intro-pill -mt-3 sm:-mt-4 px-7 py-1.5 bg-acid text-ink rounded-full border-[3px] border-ink flex items-center gap-2 shadow-[5px_5px_0px_#000]">
+        <span class="font-serifItalic italic text-3xl sm:text-5xl font-bold">imagine</span>
+        <span class="px-2 py-0.5 bg-ink text-acid font-mono text-[10px] font-bold rounded-full uppercase">LIVE</span>
+      </div>
+      <div class="mt-7 w-44 h-2 rounded-full bg-white/15 overflow-hidden border border-white/25">
+        <div class="intro-bar w-full h-full bg-acid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. TOP NAVIGATION BAR + MOBILE SEARCH DRAWER                          -->
+  <!-- ===================================================================== -->
+  <header class="fixed top-0 inset-x-0 h-[56px] z-40 nb-surface border-t-0 border-x-0 px-2.5 sm:px-4 flex items-center justify-between gap-2">
+    <div onclick="centerBoard()" class="flex items-center gap-2 cursor-pointer shrink-0" title="Center Canvas (F)">
+      <svg viewBox="0 0 120 120" class="w-9 h-9 rounded-full border-2 border-ink bg-ink shrink-0">
+        <circle cx="60" cy="60" r="58" fill="#101010"/>
+        <path d="M 2 60 A 58 58 0 0 0 118 60 Z" fill="#FFFFFF"/>
+        <circle cx="60" cy="60" r="35" fill="#27272A" stroke="#101010" stroke-width="2"/>
+        <text x="60" y="19" text-anchor="middle" fill="#FFFFFF" font-family="Anton, sans-serif" font-size="11" letter-spacing="1">ORATORS' CLUB</text>
+        <text x="60" y="46" text-anchor="middle" fill="#CBFF54" font-family="Anton, sans-serif" font-size="13" letter-spacing="1">MJCET</text>
+        <circle cx="60" cy="68" r="14" fill="none" stroke="#CBFF54" stroke-width="4"/>
+        <circle cx="60" cy="70" r="8" fill="none" stroke="#CBFF54" stroke-width="3"/>
+        <text x="60" y="108" text-anchor="middle" fill="#101010" font-family="Inter Tight, sans-serif" font-weight="800" font-size="9.5">Dept. of English</text>
+      </svg>
+      <div class="flex items-center gap-1.5">
+        <span class="font-poplar text-lg sm:text-xl tracking-wide">ORATORS</span>
+        <span class="hidden sm:inline-block px-2 py-0.5 bg-acid text-ink font-serifItalic italic font-bold text-sm rounded-full border-2 border-ink -rotate-3 leading-none">imagine</span>
+      </div>
+    </div>
+
+    <nav id="top-hashtag-strip" class="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar px-1"></nav>
+
+    <div class="flex items-center gap-1.5 shrink-0">
+      <!-- Desktop Search Input -->
+      <div class="relative hidden sm:flex items-center">
+        <input type="text" id="canvas-search-input" placeholder="Search pins (/)"
+          oninput="handleCanvasSearch(this.value)"
+          class="w-32 focus:w-48 transition-all h-9 rounded-xl nb-surface-sm px-2.5 pr-6 text-xs font-mono outline-none" />
+        <button type="button" id="canvas-search-clear" onclick="clearCanvasSearch()"
+          class="hidden absolute right-2 text-xs font-bold opacity-60 hover:opacity-100">✕</button>
+      </div>
+
+      <!-- Mobile Search Toggle Button -->
+      <button type="button" onclick="toggleMobileSearch()" title="Search Pins"
+        class="sm:hidden w-9 h-9 rounded-xl nb-surface-sm nb-btn flex items-center justify-center text-sm">
+        🔍
+      </button>
+
+      <!-- Select Mode Toggle (For Mobile/Desktop Bulk Actions) -->
+      <button type="button" id="select-mode-btn" onclick="toggleSelectMode()" title="Multi-Select Cards (or Shift+Drag)"
+        class="w-9 h-9 rounded-xl nb-surface-sm nb-btn flex items-center justify-center text-xs font-mono font-bold">
+        ☑️
+      </button>
+
+      <span id="sync-status-badge" title="Sync Status"
+        class="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl nb-muted font-mono text-[10px] font-bold border border-current/20">
+        <span id="sync-dot" class="w-2 h-2 rounded-full bg-mintpop"></span>
+        <span id="sync-label">LOCAL + LIVE</span>
+      </span>
+
+      <button type="button" id="theme-btn" onclick="toggleDarkMode()" title="Switch Dark / Light Mode"
+        class="w-9 h-9 rounded-xl nb-surface-sm nb-btn flex items-center justify-center text-sm">
+        🌙
+      </button>
+
+      <button type="button" onclick="openShareModal()" title="Share to WhatsApp & Board Tools"
+        class="h-9 px-3 rounded-xl bg-acid hover:bg-yellowpop text-ink border-[2.5px] border-ink shadow-[3px_3px_0px_#101010] nb-btn font-poplar text-xs sm:text-sm flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-mintpop border border-ink animate-pulse"></span>
+        <span>SHARE</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Search Drawer -->
+  <div id="mobile-search-bar" class="fixed top-[56px] inset-x-0 z-30 nb-surface border-t-0 px-3 py-2 hidden sm:hidden items-center gap-2">
+    <input type="text" id="mobile-search-input" placeholder="Search pins by title, author, note, or #tag..."
+      oninput="handleCanvasSearch(this.value)"
+      class="flex-1 nb-muted rounded-xl px-3 py-1.5 text-xs font-mono border-2 border-current/20 outline-none" />
+    <button type="button" onclick="clearCanvasSearch(); toggleMobileSearch(false);"
+      class="px-2.5 py-1.5 rounded-xl bg-raspberry text-white font-mono text-xs font-bold border border-ink">
+      ✕
+    </button>
+  </div>
+
+  <!-- Live Drag-to-Relink & Multi-Select Helper Pill -->
+  <div id="canvas-helper-pill" class="fixed top-[68px] left-1/2 -translate-x-1/2 z-30 pointer-events-none hidden px-3.5 py-1.5 rounded-full bg-ink text-acid border-2 border-acid shadow-[3px_3px_0px_#000] font-mono text-[11px] font-bold">
+    💡 Drop onto any #Hashtag sticker to re-wire cable!
+  </div>
+
+  <!-- Off-Screen Wayfinder Button -->
+  <button type="button" id="wayfinder-btn" onclick="centerBoard()"
+    class="fixed top-[72px] left-1/2 -translate-x-1/2 z-30 hidden px-4 py-2 rounded-full bg-yellowpop text-ink border-[2.5px] border-ink shadow-[4px_4px_0px_#101010] font-poplar text-xs tracking-wide nb-btn items-center gap-1.5">
+    <span>🧭 BOARD IS OFF-SCREEN — RETURN TO CENTER</span>
+  </button>
+
+  <!-- ===================================================================== -->
+  <!-- 3. INFINITE CANVAS VIEWPORT                                           -->
+  <!-- ===================================================================== -->
+  <main id="canvas-viewport">
+    <div id="canvas-world">
+      <svg id="strings-layer" class="overflow-visible pointer-events-none" style="position:absolute; left:0; top:0; width:1px; height:1px;"></svg>
+      <div id="nodes-layer"></div>
+    </div>
+  </main>
+
+  <div id="marquee-box"></div>
+
+  <div id="canvas-drop-overlay">
+    <div class="px-6 py-4 rounded-2xl bg-acid text-ink border-[3px] border-ink shadow-[6px_6px_0px_#000] text-center">
+      <div class="font-poplar text-2xl">DROP IMAGES TO PIN ON CANVAS</div>
+      <div class="font-mono text-xs mt-1">Drop directly onto any #Hashtag hub or anywhere on the board</div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 4. FLOATING CONTROLS & BULK SELECTION ACTION BAR                      -->
+  <!-- ===================================================================== -->
+  <button type="button" onclick="openPostModal()" title="Add Image or Link (Shortcut: N or Ctrl+V)" aria-label="Add Idea"
+    class="fixed left-[20px] bottom-[20px] z-40 w-[58px] h-[58px] rounded-2xl bg-acid hover:bg-yellowpop text-ink border-[3px] border-ink shadow-[4px_4px_0px_#101010] nb-btn flex items-center justify-center text-3xl font-black leading-none">
+    +
+  </button>
+
+  <!-- Multi-Select Floating Bar -->
+  <div id="bulk-action-bar" class="fixed bottom-[20px] left-1/2 -translate-x-1/2 z-40 hidden items-center gap-2 px-3.5 py-2 rounded-2xl nb-surface">
+    <span id="bulk-count-label" class="font-poplar text-xs sm:text-sm px-2 py-0.5 rounded bg-cyanpop text-ink border border-ink">0 SELECTED</span>
+    <select id="bulk-tag-select" onchange="if(this.value){ bulkMoveSelectedPins(this.value); this.value=''; }"
+      class="px-2.5 py-1 rounded-xl nb-muted font-poplar text-xs border-2 border-current/25 outline-none cursor-pointer">
+      <option value="">Move to #Tag...</option>
+    </select>
+    <button type="button" onclick="bulkDeleteSelectedPins()"
+      class="px-2.5 py-1 rounded-xl bg-raspberry text-white font-poplar text-xs border-2 border-ink nb-btn">
+      DELETE
+    </button>
+    <button type="button" onclick="clearSelection()"
+      class="px-2 py-1 rounded-xl nb-muted font-mono text-xs font-bold">
+      ✕
+    </button>
+  </div>
+
+  <div class="fixed right-[20px] bottom-[20px] z-40 h-[42px] nb-surface rounded-2xl flex items-center overflow-hidden">
+    <button type="button" onclick="stepZoom(-0.15)" class="h-full px-3 hover:bg-acid/40 font-mono text-sm font-bold border-r-2 border-current" title="Zoom Out">−</button>
+    <button type="button" onclick="centerBoard()" id="zoom-label" title="Fit Entire Board (Shortcut: F)" class="h-full px-2.5 hover:bg-acid/40 font-mono text-xs font-bold">100%</button>
+    <button type="button" onclick="stepZoom(0.15)" class="h-full px-3 hover:bg-acid/40 font-mono text-sm font-bold border-x-2 border-current" title="Zoom In">+</button>
+    <button type="button" onclick="tidyBoard()" title="Auto-Arrange All Hubs & Cards Cleanly (Shortcut: T)" class="h-full px-3 bg-acid hover:bg-yellowpop text-ink font-poplar text-xs tracking-wide">
+      TIDY
+    </button>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 5. FULL-SCREEN HASHTAG GALLERY PAGE (WITH SORT CONTROLS)              -->
+  <!-- ===================================================================== -->
+  <section id="gallery-page" class="fixed inset-0 z-50 bg-paper dark:bg-[#111115] overflow-y-auto hidden flex-col">
+    <div id="gallery-banner" class="border-b-[3px] border-ink py-4 px-4 sm:px-8 sticky top-0 z-20">
+      <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <button type="button" onclick="closeGalleryPage()"
+            class="px-3.5 py-2 bg-ink text-white font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink nb-btn">
+            ← CANVAS
+          </button>
+          <div class="px-4 py-1 rounded-full bg-white text-ink border-[3px] border-ink shadow-[3px_3px_0px_#101010]">
+            <h2 id="gallery-title" class="font-poplar text-xl sm:text-3xl">#Posterdesign</h2>
+          </div>
+          <span id="gallery-count" class="px-2.5 py-1 rounded-lg bg-ink text-acid font-mono text-xs font-bold">0 PINS</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="gallery-sort-select" onchange="appState.gallerySort=this.value; renderGalleryGrid();"
+            class="px-3 py-2 bg-white text-ink font-mono text-xs font-bold rounded-xl border-2 border-ink shadow-[3px_3px_0px_#101010] outline-none cursor-pointer">
+            <option value="hype">🔥 Sort: Most Hyped</option>
+            <option value="newest">🕒 Sort: Newest First</option>
+          </select>
+          <button type="button" onclick="shareWhatsAppDigest(appState.activeGalleryTag)"
+            class="px-3.5 py-2 bg-[#25D366] hover:brightness-105 text-ink font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink shadow-[3px_3px_0px_#101010] nb-btn">
+            💬 SHARE # TO WHATSAPP
+          </button>
+          <a id="gallery-drive-link" href="#" target="_blank" rel="noopener noreferrer"
+            class="hidden px-3.5 py-2 bg-white hover:bg-cyanpop text-ink font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink shadow-[3px_3px_0px_#101010] nb-btn">
+            📁 DRIVE ↗
+          </a>
+          <button type="button" onclick="openTagModal(appState.activeGalleryTag)"
+            class="px-3 py-2 bg-white hover:bg-yellowpop text-ink font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink shadow-[3px_3px_0px_#101010] nb-btn">
+            EDIT / DELETE #
+          </button>
+          <button type="button" onclick="openPostModal(appState.activeGalleryTag)"
+            class="px-3.5 py-2 bg-acid hover:bg-yellowpop text-ink font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink shadow-[3px_3px_0px_#101010] nb-btn">
+            + ADD HERE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gallery-grid" class="max-w-6xl w-full mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 pb-24"></div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- 6. POST IDEA MODAL (WITH NOTES FIELD & MULTI-ITEM STAGING TRAY)       -->
+  <!-- ===================================================================== -->
+  <div id="post-modal" onclick="if(event.target===this) closePostModal()" class="fixed inset-0 z-50 bg-black/75 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-md nb-surface rounded-3xl p-5 space-y-3.5 my-auto">
+      <div class="flex items-center justify-between pb-2 border-b-2 border-current/15">
+        <h3 class="font-poplar text-2xl">ADD TO CANVAS</h3>
+        <button type="button" onclick="closePostModal()" class="w-8 h-8 rounded-xl nb-muted font-bold text-base">✕</button>
+      </div>
+
+      <form onsubmit="submitNewPin(event)" class="space-y-3">
+        <div class="nb-muted p-3 rounded-2xl border-2 border-current/20 space-y-2">
+          <div class="flex gap-2">
+            <label class="flex-1 py-2.5 px-3 bg-cyanpop hover:bg-yellowpop text-ink font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink shadow-[2px_2px_0px_#101010] cursor-pointer text-center nb-btn">
+              📷 UPLOAD IMAGES
+              <input type="file" id="post-file-input" accept="image/*" multiple class="hidden" onchange="handleImageFiles(event)" />
+            </label>
+            <button type="button" onclick="pasteClipboardLink()"
+              class="px-3 py-2.5 bg-yellowpop hover:bg-acid text-ink font-poplar text-xs sm:text-sm rounded-xl border-2 border-ink shadow-[2px_2px_0px_#101010] nb-btn">
+              📋 PASTE LINK
+            </button>
+          </div>
+
+          <input type="text" id="post-url-input" placeholder="Paste Pinterest, Instagram, Drive, or any image link..."
+            oninput="handleUrlTyping(this.value)"
+            class="w-full nb-surface-sm rounded-xl px-3 py-2 text-xs font-mono outline-none" />
+          <p id="post-status-text" class="font-mono text-[10px] opacity-75">
+            Ready — upload multiple files, paste any link, or type a text note.
+          </p>
+        </div>
+
+        <!-- Staged Thumbnails Strip -->
+        <div id="staged-tray" class="hidden flex gap-2 overflow-x-auto pb-1 no-scrollbar"></div>
+
+        <div class="flex gap-3 items-start">
+          <div class="w-24 h-24 rounded-2xl bg-ink border-2 border-ink overflow-hidden shrink-0 flex items-center justify-center">
+            <img id="post-preview-img" src="" alt="Preview" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex-1 space-y-2">
+            <input type="text" id="post-title-input" placeholder="Idea title..."
+              oninput="refreshDefaultPreview()"
+              class="w-full nb-muted rounded-xl px-3 py-2 text-xs font-semibold border-2 border-current/20 outline-none" />
+            <input type="text" id="post-author-input" placeholder="Your name (saved automatically)"
+              class="w-full nb-muted rounded-xl px-3 py-2 text-xs font-semibold border-2 border-current/20 outline-none" />
+          </div>
+        </div>
+
+        <textarea id="post-notes-input" rows="2" placeholder="Context / design notes (e.g. 'Use this bold font pairing for main title')..."
+          class="w-full nb-muted rounded-xl px-3 py-2 text-xs border-2 border-current/20 outline-none resize-none"></textarea>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-mono text-[10px] font-bold uppercase opacity-75">Attach to Hashtag</span>
+            <button type="button" onclick="closePostModal(); openTagModal();" class="font-mono text-[10px] font-bold underline text-raspberry">
+              + New #Tag
+            </button>
+          </div>
+          <div id="post-tag-pills" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <button type="submit" id="post-submit-btn" class="w-full py-3 bg-acid hover:bg-yellowpop text-ink font-poplar text-lg rounded-2xl border-[3px] border-ink shadow-[4px_4px_0px_#101010] nb-btn">
+          POST TO CANVAS →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 7. HASHTAG & GOOGLE DRIVE MANAGER MODAL                               -->
+  <!-- ===================================================================== -->
+  <div id="tag-modal" onclick="if(event.target===this) closeTagModal()" class="fixed inset-0 z-50 bg-black/75 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-md nb-surface rounded-3xl p-5 space-y-4 my-auto">
+      <div class="flex items-center justify-between pb-2 border-b-2 border-current/15">
+        <h3 id="tag-modal-heading" class="font-poplar text-2xl">MANAGE HASHTAGS & DRIVE</h3>
+        <button type="button" onclick="closeTagModal()" class="w-8 h-8 rounded-xl nb-muted font-bold text-base">✕</button>
+      </div>
+
+      <form onsubmit="saveTagForm(event)" class="nb-muted p-3.5 rounded-2xl border-2 border-current/20 space-y-2.5">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-mono text-[10px] font-bold mb-1">Hashtag Name</label>
+            <input type="text" id="tag-name-input" placeholder="#StageDesign" required
+              class="w-full nb-surface-sm rounded-xl px-2.5 py-1.5 text-xs font-bold outline-none" />
+          </div>
+          <div>
+            <label class="block font-mono text-[10px] font-bold mb-1">Sticker Shape</label>
+            <select id="tag-shape-input" class="w-full nb-surface-sm rounded-xl px-2.5 py-1.5 text-xs font-bold outline-none">
+              <option value="oval">Oval</option>
+              <option value="square">Square</option>
+              <option value="hex">Hexagon</option>
+              <option value="pill">Pill</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2">
+          <span class="font-mono text-[10px] font-bold">Sticker Color:</span>
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="setTagColor('#FF0099')" class="w-6 h-6 rounded-full bg-[#FF0099] border-2 border-ink"></button>
+            <button type="button" onclick="setTagColor('#26B0FF')" class="w-6 h-6 rounded-full bg-[#26B0FF] border-2 border-ink"></button>
+            <button type="button" onclick="setTagColor('#00A859')" class="w-6 h-6 rounded-full bg-[#00A859] border-2 border-ink"></button>
+            <button type="button" onclick="setTagColor('#C072F8')" class="w-6 h-6 rounded-full bg-[#C072F8] border-2 border-ink"></button>
+            <button type="button" onclick="setTagColor('#CBFF54')" class="w-6 h-6 rounded-full bg-[#CBFF54] border-2 border-ink"></button>
+            <button type="button" onclick="setTagColor('#FFE600')" class="w-6 h-6 rounded-full bg-[#FFE600] border-2 border-ink"></button>
+            <input type="color" id="tag-color-input" value="#CBFF54" class="w-7 h-6 rounded border border-ink cursor-pointer" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-mono text-[10px] font-bold mb-1">📁 Google Drive Folder Link (Optional)</label>
+          <input type="url" id="tag-drive-input" placeholder="https://drive.google.com/drive/folders/..."
+            class="w-full nb-surface-sm rounded-xl px-2.5 py-1.5 text-xs font-mono outline-none" />
+        </div>
+
+        <button type="submit" id="tag-submit-btn" class="w-full py-2 bg-acid hover:bg-yellowpop text-ink font-poplar text-sm rounded-xl border-2 border-ink shadow-[2px_2px_0px_#101010] nb-btn">
+          SAVE HASHTAG HUB
+        </button>
+      </form>
+
+      <div id="tag-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 8. CARD LIGHTBOX MODAL (NOTES + COMMENTS + 1x/2x HYPE + WHATSAPP)     -->
+  <!-- ===================================================================== -->
+  <div id="card-modal" onclick="if(event.target===this) closeCardModal()" class="fixed inset-0 z-50 bg-black/80 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-lg nb-surface rounded-3xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
+      <div class="bg-ink relative flex items-center justify-center max-h-[40vh] overflow-hidden border-b-[3px] border-ink shrink-0">
+        <img id="card-modal-img" src="" alt="" onerror="fallbackImg(this)" class="w-full h-auto max-h-[40vh] object-contain" />
+        <button type="button" onclick="closeCardModal()" class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white text-ink border-2 border-ink font-bold">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 space-y-3 overflow-y-auto">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <select id="card-modal-tag-select" onchange="changePinHashtag(this.value)"
+            class="px-3 py-1.5 rounded-xl font-poplar text-xs text-ink border-2 border-ink outline-none cursor-pointer">
+          </select>
+          <div class="flex items-center gap-2">
+            <button type="button" id="card-modal-hype-btn" onclick="cyclePinHype(appState.activeCardId)"
+              class="px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold border-2 border-ink nb-btn flex items-center gap-1.5">
+              <span id="card-modal-hype-icon">🔥</span>
+              <span id="card-modal-likes">0</span>
+              <span id="card-modal-hype-tag" class="text-[10px] uppercase">HYPE</span>
+            </button>
+            <button type="button" id="card-modal-delete-btn" onclick="deleteActiveCard()"
+              class="px-3 py-1.5 rounded-xl bg-raspberry text-white font-mono text-xs font-bold border-2 border-ink nb-btn">
+              DELETE
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Editable Title, Author & Context Notes -->
+        <div class="space-y-1.5">
+          <input type="text" id="card-modal-title-input" onchange="saveActiveCardDetails()"
+            placeholder="Idea title..."
+            class="w-full font-bold text-base sm:text-lg bg-transparent border-b border-transparent hover:border-current/30 focus:border-current px-1 py-0.5 rounded outline-none transition-colors" />
+          <div class="flex items-center justify-between gap-2 px-1 font-mono text-xs opacity-75">
+            <div class="flex items-center gap-1.5">
+              <span>Posted by</span>
+              <input type="text" id="card-modal-author-input" onchange="saveActiveCardDetails()"
+                placeholder="Member"
+                class="font-bold bg-transparent border-b border-transparent hover:border-current/30 focus:border-current px-1 py-0.5 rounded outline-none w-32" />
+            </div>
+            <a id="card-modal-link" href="#" target="_blank" rel="noopener noreferrer" class="underline font-bold text-cyanpop">
+              ORIGINAL LINK ↗
+            </a>
+          </div>
+          <textarea id="card-modal-notes-input" rows="2" onchange="saveActiveCardDetails()"
+            placeholder="Add context or design notes here..."
+            class="w-full nb-muted rounded-xl px-2.5 py-1.5 text-xs border border-current/20 outline-none resize-none mt-1"></textarea>
+        </div>
+
+        <!-- Quick Team Comments Thread -->
+        <div class="nb-muted p-3 rounded-2xl border-2 border-current/20 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-[10px] font-bold uppercase opacity-75">💬 Team Feedback & Notes</span>
+            <span id="card-modal-comments-count" class="font-mono text-[10px] opacity-65">0 comments</span>
+          </div>
+          <div id="card-modal-comments-list" class="space-y-1.5 max-h-28 overflow-y-auto pr-1 text-xs"></div>
+          <form onsubmit="submitPinComment(event)" class="flex gap-1.5 pt-1">
+            <input type="text" id="card-modal-comment-input" placeholder="Write quick feedback..."
+              class="flex-1 nb-surface-sm rounded-xl px-2.5 py-1.5 text-xs outline-none" />
+            <button type="submit" class="px-3 py-1.5 rounded-xl bg-acid text-ink font-poplar text-xs border-2 border-ink nb-btn">
+              POST
+            </button>
+          </form>
+        </div>
+
+        <!-- Direct WhatsApp Group Share Bar -->
+        <div class="nb-muted p-3 rounded-2xl border-2 border-current/20 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-[10px] font-bold uppercase opacity-75">Discuss in Club WhatsApp Group</span>
+            <span id="card-modal-hype-hint" class="font-mono text-[10px] font-bold text-raspberry"></span>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="sharePinToWhatsApp(appState.activeCardId)"
+              class="flex-1 py-2 px-3 bg-[#25D366] hover:brightness-105 text-ink font-poplar text-sm rounded-xl border-2 border-ink shadow-[2px_2px_0px_#101010] nb-btn flex items-center justify-center gap-1.5">
+              <span>💬 SEND PIN TO WHATSAPP</span>
+            </button>
+            <button type="button" onclick="copyPinWhatsAppNote(appState.activeCardId)" title="Copy formatted discussion message"
+              class="px-3 py-2 nb-surface-sm rounded-xl font-poplar text-xs nb-btn">
+              📋 COPY NOTE
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 9. SHARE, WHATSAPP DIGEST & BOARD LOCK MODAL                          -->
+  <!-- ===================================================================== -->
+  <div id="share-modal" onclick="if(event.target===this) closeShareModal()" class="fixed inset-0 z-50 bg-black/75 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-sm nb-surface rounded-3xl p-5 space-y-4 my-auto">
+      <div class="flex items-center justify-between pb-2 border-b-2 border-current/15">
+        <h3 class="font-poplar text-2xl">WHATSAPP & BOARD TOOLS</h3>
+        <button type="button" onclick="closeShareModal()" class="w-8 h-8 rounded-xl nb-muted font-bold text-base">✕</button>
+      </div>
+
+      <!-- WhatsApp Group Digest Builder -->
+      <div class="nb-muted p-3.5 rounded-2xl border-2 border-current/20 space-y-2.5">
+        <div class="font-poplar text-sm">💬 SHARE SAVED PINS TO WHATSAPP</div>
+        <p class="text-[11px] opacity-80 leading-snug">
+          Send a ranked summary of saved pins with hype counts, notes & jump links straight to your WhatsApp group:
+        </p>
+        <select id="wa-digest-filter" class="w-full nb-surface-sm rounded-xl px-3 py-2 text-xs font-bold outline-none">
+          <option value="ALL">All Saved Pins (Top Hyped First)</option>
+        </select>
+        <button type="button" onclick="shareWhatsAppDigest(document.getElementById('wa-digest-filter').value)"
+          class="w-full py-2.5 bg-[#25D366] hover:brightness-105 text-ink font-poplar text-base rounded-xl border-2 border-ink shadow-[3px_3px_0px_#101010] nb-btn">
+          💬 OPEN IN WHATSAPP →
+        </button>
+      </div>
+
+      <!-- Board Safety Lock Toggle -->
+      <div class="nb-muted p-3 rounded-2xl border-2 border-current/20 flex items-center justify-between gap-2">
+        <div>
+          <div class="font-poplar text-xs">🔒 BOARD SAFETY LOCK</div>
+          <div class="font-mono text-[10px] opacity-75">Prevent accidental hub delete or reset</div>
+        </div>
+        <button type="button" id="board-lock-btn" onclick="toggleBoardSafetyLock()"
+          class="px-3 py-1.5 rounded-xl font-poplar text-xs border-2 border-ink nb-btn bg-acid text-ink">
+          UNLOCKED
+        </button>
+      </div>
+
+      <button type="button" onclick="copyLiveLink()"
+        class="w-full py-2.5 bg-acid hover:bg-yellowpop text-ink font-poplar text-sm rounded-2xl border-2 border-ink shadow-[3px_3px_0px_#101010] nb-btn">
+        🔗 COPY LIVE BOARD SNAPSHOT LINK
+      </button>
+
+      <div class="grid grid-cols-3 gap-2 pt-1">
+        <button type="button" onclick="exportBackupJSON()" class="py-2 nb-muted rounded-xl font-mono text-[11px] font-bold border-2 border-current/20 nb-btn">
+          📦 Export
+        </button>
+        <label class="py-2 nb-muted rounded-xl font-mono text-[11px] font-bold border-2 border-current/20 nb-btn text-center cursor-pointer">
+          📥 Import
+          <input type="file" accept=".json,application/json" class="hidden" onchange="importBackupJSON(event)" />
+        </label>
+        <button type="button" id="reset-demo-btn" onclick="resetDefaultDemo()" class="py-2 bg-raspberry/15 text-raspberry rounded-xl font-mono text-[11px] font-bold border-2 border-raspberry/40 nb-btn">
+          ↺ Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Banner (With Optional Action / Undo Button) -->
+  <div id="toast-banner" class="fixed bottom-[82px] left-1/2 -translate-x-1/2 z-[100] hidden px-4 py-2 bg-ink text-acid font-mono text-xs font-bold rounded-xl border-2 border-acid shadow-[4px_4px_0px_#000] items-center gap-3">
+    <span id="toast-text"></span>
+    <button type="button" id="toast-action-btn" class="hidden px-2.5 py-0.5 rounded-lg bg-acid text-ink font-poplar text-xs border border-ink">
+      UNDO ↺
+    </button>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- FIREBASE CONFIGURATION (PASTE YOUR KEYS HERE TO ENABLE CLOUD DB)      -->
+  <!-- ===================================================================== -->
+  <script>
+    window.FIREBASE_SETUP = {
+      appId: "orators-imagine-app",
+      config: {
+        apiKey: "PASTE_YOUR_API_KEY_HERE",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+      }
+    };
+  </script>
+
+  <!-- ===================================================================== -->
+  <!-- CORE APPLICATION ENGINE                                               -->
+  <!-- ===================================================================== -->
+  <script>
+    // -------------------------------------------------------------------------
+    // 1. SMOOTH INTRO CURTAIN CONTROLLER
+    // -------------------------------------------------------------------------
+    let introDismissed = false;
+    window.hideIntroCurtain = function () {
+      if (introDismissed) return;
+      introDismissed = true;
+      const c = document.getElementById('intro-curtain');
+      if (c) {
+        c.classList.add('hide-curtain');
+        setTimeout(() => { c.style.display = 'none'; }, 650);
+      }
+    };
+
+    Promise.race([
+      (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve(),
+      new Promise((res) => setTimeout(res, 750))
+    ]).then(() => {
+      setTimeout(window.hideIntroCurtain, 520);
+    });
+    setTimeout(window.hideIntroCurtain, 1600);
+
+    // -------------------------------------------------------------------------
+    // 2. PERSISTENTVOTER ID, DATA MODEL & INDEXEDDB + LOCALSTORAGE ENGINE
+    // -------------------------------------------------------------------------
+    const HYPE_STORAGE_KEY = 'orators_my_hypes_v2';
+    const VOTER_ID_KEY = 'orators_voter_uid_v2';
+    const AUTHOR_STORAGE_KEY = 'orators_member_name_v1';
+    const STORAGE_KEY = 'orators_clean_board_v4';
+    const IDB_NAME = 'OratorsImagineDB';
+    const IDB_STORE = 'boards';
+
+    function getVoterId() {
+      if (window.__cloudUid) return window.__cloudUid;
+      try {
+        let uid = localStorage.getItem(VOTER_ID_KEY);
+        if (!uid) {
+          uid = 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+          localStorage.setItem(VOTER_ID_KEY, uid);
+        }
+        return uid;
+      } catch (e) {
+        return 'v_local_user';
+      }
+    }
+
+    function loadMyHypes() {
+      try {
+        const raw = localStorage.getItem(HYPE_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') return parsed;
+        }
+      } catch (e) {}
+      return {};
+    }
+
+    function saveMyHypes() {
+      try {
+        localStorage.setItem(HYPE_STORAGE_KEY, JSON.stringify(appState.myHypes));
+      } catch (e) {}
+    }
+
+    function getMyPinHype(pinId) {
+      const pin = appState.pins.find((p) => p.id === pinId);
+      const uid = getVoterId();
+      if (pin && pin.hypeMap && typeof pin.hypeMap[uid] === 'number') {
+        const mv = pin.hypeMap[uid];
+        return mv === 1 ? 1 : mv === 2 ? 2 : 0;
+      }
+      const v = Number(appState.myHypes[pinId] || 0);
+      return v === 1 ? 1 : v === 2 ? 2 : 0;
+    }
+
+    function computeTotalLikes(pin) {
+      if (pin.hypeMap && typeof pin.hypeMap === 'object' && Object.keys(pin.hypeMap).length > 0) {
+        const mapSum = Object.values(pin.hypeMap).reduce((s, v) => s + (Number(v) || 0), 0);
+        return Math.max(Number(pin.baseLikes || 0) + mapSum, 0);
+      }
+      return Math.max(0, Number(pin.likes) || 0);
+    }
+
+    function cyclePinHype(pinId, event = null) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      const pin = appState.pins.find((p) => p.id === pinId);
+      if (!pin) return;
+
+      const uid = getVoterId();
+      const current = getMyPinHype(pinId);
+      const next = current === 0 ? 1 : current === 1 ? 2 : 0;
+      const delta = next - current;
+
+      if (!pin.hypeMap || typeof pin.hypeMap !== 'object') {
+        pin.baseLikes = Math.max(0, (Number(pin.likes) || 0) - current);
+        pin.hypeMap = {};
+      }
+      if (next === 0) {
+        delete pin.hypeMap[uid];
+        delete appState.myHypes[pinId];
+      } else {
+        pin.hypeMap[uid] = next;
+        appState.myHypes[pinId] = next;
+      }
+      saveMyHypes();
+
+      pin.likes = computeTotalLikes(pin);
+      broadcastSync('HYPE_DELTA', { id: pin.id, uid, level: next, delta, likes: pin.likes, hypeMap: pin.hypeMap, baseLikes: pin.baseLikes });
+
+      // Keyed DOM update (No full-canvas teardown)
+      updateSinglePinDOM(pin);
+      if (appState.activeGalleryTag) renderGalleryGrid();
+      if (appState.activeCardId === pinId) syncCardModalHypeUI(pin);
+
+      requestAnimationFrame(() => {
+        document.querySelectorAll(`[data-hype-pin="${CSS.escape(pinId)}"]`).forEach((el) => {
+          el.classList.remove('hype-animate');
+          void el.offsetWidth;
+          el.classList.add('hype-animate');
+        });
+      });
+
+      if (next === 1) toast('🔥 Hyped! Tap again to REALLY hype it (2x)');
+      else if (next === 2) toast('🔥🔥 MEGA HYPED! (Max 2x hype reached)');
+      else toast('↺ Hype removed');
+    }
+
+    function makeTypographicPoster(label = 'ORATORS IDEA', bg = '#101010', fg = '#CBFF54') {
+      const safe = String(label || 'ORATORS IDEA').slice(0, 26).replace(/[<>&'"]/g, '');
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+        <rect width="480" height="360" fill="${bg}"/>
+        <circle cx="420" cy="60" r="95" fill="${fg}" opacity="0.14"/>
+        <rect x="24" y="24" width="432" height="312" rx="18" fill="none" stroke="${fg}" stroke-width="4" stroke-dasharray="10 8"/>
+        <text x="240" y="168" text-anchor="middle" fill="${fg}" font-family="Impact, Arial Black, sans-serif" font-size="30" letter-spacing="2">${safe.toUpperCase()}</text>
+        <text x="240" y="206" text-anchor="middle" fill="#FFFFFF" opacity="0.7" font-family="monospace" font-size="13">ORATORS' CLUB • IMAGINE</text>
+      </svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    function getInitialBoard() {
+      return {
+        hubs: {
+          '#Posterdesign': { id: '#Posterdesign', color: '#FF0099', shape: 'oval', gdrive: 'https://drive.google.com/drive/folders/1sample', x: -420, y: -230 },
+          '#IDdesign':     { id: '#IDdesign',     color: '#26B0FF', shape: 'square', gdrive: '', x: 420, y: -230 },
+          '#Bannerdesign': { id: '#Bannerdesign', color: '#00A859', shape: 'hex', gdrive: '', x: -420, y: 250 },
+          '#Randomfun':    { id: '#Randomfun',    color: '#C072F8', shape: 'pill', gdrive: '', x: 420, y: 250 }
+        },
+        pins: [
+          {
+            id: 'p1', hashtag: '#Posterdesign', title: 'Swiss Grid Debate Poster', author: 'Ayaan',
+            notes: 'High-contrast Anton headline with clean grid alignment.',
+            comments: [{ author: 'Sara', text: 'Love the yellow accent!', ts: 1004 }],
+            url: 'https://pinterest.com',
+            img: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80',
+            x: -690, y: -380, likes: 7, baseLikes: 7, hypeMap: {}, createdAt: 1004
+          },
+          {
+            id: 'p2', hashtag: '#Posterdesign', title: 'Kinetic Typography Flyer', author: 'Sara',
+            notes: 'Great motion blur inspiration for our Instagram reel teaser.',
+            comments: [],
+            url: 'https://instagram.com',
+            img: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=600&q=80',
+            x: -150, y: -400, likes: 5, baseLikes: 5, hypeMap: {}, createdAt: 1003
+          },
+          {
+            id: 'p3', hashtag: '#IDdesign', title: 'Holographic Club Pass', author: 'Rohan',
+            notes: 'Vertical lanyard layout with bold role badge at the bottom.',
+            comments: [],
+            url: 'https://drive.google.com/file/d/1sampleid/view',
+            img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+            x: 690, y: -380, likes: 9, baseLikes: 9, hypeMap: {}, createdAt: 1002
+          },
+          {
+            id: 'p4', hashtag: '#Bannerdesign', title: 'Auditorium Stage Backdrop', author: 'Meera',
+            notes: 'Wide 16:9 backdrop with high-visibility club emblem.',
+            comments: [],
+            url: 'https://instagram.com',
+            img: 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&fit=crop&w=600&q=80',
+            x: -690, y: 400, likes: 6, baseLikes: 6, hypeMap: {}, createdAt: 1001
+          },
+          {
+            id: 'p5', hashtag: '#Randomfun', title: 'Gelato Sticker Pack Merch', author: 'Kabir',
+            notes: 'Die-cut vinyl stickers for event winners & freshers.',
+            comments: [],
+            url: 'https://pinterest.com',
+            img: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=600&q=80',
+            x: 690, y: 400, likes: 12, baseLikes: 12, hypeMap: {}, createdAt: 1000
+          }
+        ]
+      };
+    }
+
+    const appState = {
+      hubs: {},
+      pins: [],
+      myHypes: loadMyHypes(),
+      selectedPostTag: '#Posterdesign',
+      stagedItems: [],
+      activeGalleryTag: null,
+      gallerySort: 'hype',
+      activeCardId: null,
+      editingTagId: null,
+      highlightedNodeId: null,
+      searchQuery: '',
+      selectMode: false,
+      selectedPinIds: new Set(),
+      boardSafetyLock: false,
+      lastDeletedBackup: null,
+      cloudActive: false
+    };
+
+    function sanitizeBoardData(raw) {
+      const def = getInitialBoard();
+      if (!raw || typeof raw !== 'object') return def;
+
+      const cleanHubs = {};
+      if (raw.hubs && typeof raw.hubs === 'object') {
+        Object.values(raw.hubs).forEach((h, i) => {
+          if (!h || !h.id) return;
+          const id = h.id.startsWith('#') ? h.id : '#' + h.id;
+          cleanHubs[id] = {
+            id,
+            color: /^#[0-9A-Fa-f]{6}$/.test(h.color) ? h.color : '#CBFF54',
+            shape: ['oval', 'square', 'hex', 'pill'].includes(h.shape) ? h.shape : 'oval',
+            gdrive: typeof h.gdrive === 'string' ? h.gdrive : '',
+            x: Number.isFinite(Number(h.x)) ? Math.round(Number(h.x)) : (i % 2 === 0 ? -420 : 420),
+            y: Number.isFinite(Number(h.y)) ? Math.round(Number(h.y)) : (i < 2 ? -230 : 250)
+          };
+        });
+      }
+      if (Object.keys(cleanHubs).length === 0) Object.assign(cleanHubs, def.hubs);
+
+      const fallbackTag = Object.keys(cleanHubs)[0];
+      const cleanPins = Array.isArray(raw.pins) ? raw.pins.map((p, idx) => {
+        if (!p || typeof p !== 'object') return null;
+        const tag = cleanHubs[p.hashtag] ? p.hashtag : fallbackTag;
+        const hub = cleanHubs[tag];
+        const likesNum = Number.isFinite(Number(p.likes)) ? Math.max(0, Number(p.likes)) : 0;
+        return {
+          id: String(p.id || ('pin_' + Date.now() + '_' + idx)),
+          hashtag: tag,
+          title: String(p.title || 'Club Visual Idea'),
+          author: String(p.author || 'Member'),
+          notes: String(p.notes || ''),
+          comments: Array.isArray(p.comments) ? p.comments.slice(0, 50) : [],
+          url: String(p.url || ''),
+          img: String(p.img || makeTypographicPoster(p.title || 'Visual Idea')),
+          x: Number.isFinite(Number(p.x)) ? Math.round(Number(p.x)) : hub.x + 260,
+          y: Number.isFinite(Number(p.y)) ? Math.round(Number(p.y)) : hub.y,
+          likes: likesNum,
+          baseLikes: Number.isFinite(Number(p.baseLikes)) ? Math.max(0, Number(p.baseLikes)) : likesNum,
+          hypeMap: (p.hypeMap && typeof p.hypeMap === 'object') ? p.hypeMap : {},
+          createdAt: Number.isFinite(Number(p.createdAt)) ? Number(p.createdAt) : (Date.now() - idx)
+        };
+      }).filter(Boolean) : def.pins;
+
+      return { hubs: cleanHubs, pins: cleanPins };
+    }
+
+    // IndexedDB Engine (Eliminates 5MB localStorage Quota Ceiling)
+    function openBoardIDB() {
+      return new Promise((resolve) => {
+        if (!('indexedDB' in window)) return resolve(null);
+        try {
+          const req = indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = (ev) => {
+            const db = ev.target.result;
+            if (!db.objectStoreNames.contains(IDB_STORE)) {
+              db.createObjectStore(IDB_STORE);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+
+    async function saveBoardToIDB(dataObj) {
+      const db = await openBoardIDB();
+      if (!db) return;
+      try {
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(dataObj, 'main');
+      } catch (e) {}
+    }
+
+    async function loadBoardFromIDB() {
+      const db = await openBoardIDB();
+      if (!db) return null;
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction(IDB_STORE, 'readonly');
+          const req = tx.objectStore(IDB_STORE).get('main');
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. THEME, MOBILE SEARCH & SAFETY LOCK
+    // -------------------------------------------------------------------------
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      document.getElementById('theme-btn').textContent = isDark ? '☀️' : '🌙';
+      try { localStorage.setItem('orators_theme', isDark ? 'dark' : 'light'); } catch (e) {}
+      renderStrings();
+    }
+
+    (function initTheme() {
+      try {
+        if (localStorage.getItem('orators_theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.addEventListener('DOMContentLoaded', () => {
+            const b = document.getElementById('theme-btn');
+            if (b) b.textContent = '☀️';
+          });
+        }
+      } catch (e) {}
+    })();
+
+    function toggleMobileSearch(force = null) {
+      const bar = document.getElementById('mobile-search-bar');
+      const show = force !== null ? force : bar.classList.contains('hidden');
+      bar.classList.toggle('hidden', !show);
+      bar.classList.toggle('flex', show);
+      if (show) {
+        const inp = document.getElementById('mobile-search-input');
+        if (inp) inp.focus();
+      }
+    }
+
+    function handleCanvasSearch(val) {
+      appState.searchQuery = String(val || '').trim().toLowerCase();
+      const desktopInp = document.getElementById('canvas-search-input');
+      const mobileInp = document.getElementById('mobile-search-input');
+      if (desktopInp && desktopInp.value !== val) desktopInp.value = val;
+      if (mobileInp && mobileInp.value !== val) mobileInp.value = val;
+
+      const clearBtn = document.getElementById('canvas-search-clear');
+      if (clearBtn) clearBtn.classList.toggle('hidden', !appState.searchQuery);
+
+      applySearchFilterDOM();
+    }
+
+    function clearCanvasSearch() {
+      handleCanvasSearch('');
+    }
+
+    function isPinMatchingSearch(pin) {
+      if (!appState.searchQuery) return true;
+      const q = appState.searchQuery;
+      return (
+        (pin.title && pin.title.toLowerCase().includes(q)) ||
+        (pin.author && pin.author.toLowerCase().includes(q)) ||
+        (pin.notes && pin.notes.toLowerCase().includes(q)) ||
+        (pin.hashtag && pin.hashtag.toLowerCase().includes(q))
+      );
+    }
+
+    function applySearchFilterDOM() {
+      Object.values(appState.hubs).forEach((h) => {
+        const el = document.querySelector(`.hub-node[data-id="${CSS.escape(h.id)}"]`);
+        if (!el) return;
+        const hubPins = appState.pins.filter((p) => p.hashtag === h.id);
+        const hasMatch = !appState.searchQuery ||
+          h.id.toLowerCase().includes(appState.searchQuery) ||
+          hubPins.some(isPinMatchingSearch);
+        el.classList.toggle('search-dimmed', !hasMatch);
+      });
+
+      appState.pins.forEach((p) => {
+        const el = document.querySelector(`.pin-node[data-id="${CSS.escape(p.id)}"]`);
+        if (!el) return;
+        const match = isPinMatchingSearch(p);
+        el.classList.toggle('search-match', Boolean(appState.searchQuery && match));
+        el.classList.toggle('search-dimmed', Boolean(appState.searchQuery && !match));
+      });
+
+      renderStrings();
+    }
+
+    function toggleBoardSafetyLock() {
+      appState.boardSafetyLock = !appState.boardSafetyLock;
+      const btn = document.getElementById('board-lock-btn');
+      if (btn) {
+        btn.textContent = appState.boardSafetyLock ? '🔒 LOCKED' : 'UNLOCKED';
+        btn.className = appState.boardSafetyLock
+          ? 'px-3 py-1.5 rounded-xl font-poplar text-xs border-2 border-ink nb-btn bg-raspberry text-white'
+          : 'px-3 py-1.5 rounded-xl font-poplar text-xs border-2 border-ink nb-btn bg-acid text-ink';
+      }
+      toast(appState.boardSafetyLock
+        ? '🔒 Board Safety Lock enabled (Hub delete & Reset protected)'
+        : '🔓 Board Safety Lock disabled');
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. PERSISTENCE & CONFLICT-FREE SYNC ENGINE
+    // -------------------------------------------------------------------------
+    const PEER_ID = 'peer_' + Math.random().toString(36).slice(2, 8);
+    const NTFY_TOPIC = 'https://ntfy.sh/orators_club_mjcet_clean_v4';
+    const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('orators_board_sync_v4') : null;
+    let sseSource = null;
+
+    function saveBoardLocally() {
+      const dataObj = { hubs: appState.hubs, pins: appState.pins };
+      saveBoardToIDB(dataObj);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataObj));
+      } catch (e) {
+        // If localStorage hits 5MB quota due to Base64 images, save a light copy while IndexedDB holds full images
+        try {
+          const lightPins = appState.pins.map((p) => Object.assign({}, p, {
+            img: (p.img && p.img.length < 15000) ? p.img : makeTypographicPoster(p.title)
+          }));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ hubs: appState.hubs, pins: lightPins }));
+        } catch (err) {}
+      }
+    }
+
+    function loadBoardLocallySync() {
+      try {
+        const m = (window.location.hash || '').match(/snap=([A-Za-z0-9+/=%_-]+)/);
+        if (m && m[1]) {
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1])))));
+          if (decoded && decoded.hubs && Array.isArray(decoded.pins)) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+            return sanitizeBoardData(decoded);
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.hubs && Object.keys(parsed.hubs).length > 0 && Array.isArray(parsed.pins)) {
+            return sanitizeBoardData(parsed);
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function applyRemoteEvent(data) {
+      if (!data || data.sender === PEER_ID) return;
+      if (activeGesture && activeGesture.mode === 'node') return;
+
+      if (data.action === 'ADD_PIN' && data.payload) {
+        if (!appState.pins.some((p) => p.id === data.payload.id)) {
+          appState.pins.unshift(data.payload);
+          saveBoardLocally();
+          renderAll();
+        }
+      } else if (data.action === 'UPDATE_PIN' && data.payload) {
+        const idx = appState.pins.findIndex((p) => p.id === data.payload.id);
+        if (idx !== -1) {
+          // Never overwrite a valid local Base64 image with a fallback SVG from SSE
+          const merged = Object.assign({}, appState.pins[idx], data.payload);
+          if (data.payload.isRelayFallback && appState.pins[idx].img) {
+            merged.img = appState.pins[idx].img;
+          }
+          appState.pins[idx] = merged;
+          saveBoardLocally();
+          updateSinglePinDOM(merged);
+          renderTopBar();
+          renderStrings();
+          if (appState.activeGalleryTag) renderGalleryGrid();
+          if (appState.activeCardId === merged.id) {
+            syncCardModalHypeUI(merged);
+            renderCardModalComments(merged);
+          }
+        }
+      } else if (data.action === 'HYPE_DELTA' && data.payload) {
+        const p = appState.pins.find((item) => item.id === data.payload.id);
+        if (p) {
+          if (data.payload.hypeMap) p.hypeMap = data.payload.hypeMap;
+          if (Number.isFinite(data.payload.baseLikes)) p.baseLikes = data.payload.baseLikes;
+          p.likes = Math.max(0, Number.isFinite(data.payload.likes) ? data.payload.likes : computeTotalLikes(p));
+          saveBoardLocally();
+          updateSinglePinDOM(p);
+          if (appState.activeGalleryTag) renderGalleryGrid();
+          if (appState.activeCardId === p.id) syncCardModalHypeUI(p);
+        }
+      } else if (data.action === 'MOVE_NODE' && data.payload) {
+        const { type, id, x, y } = data.payload;
+        if (type === 'hub' && appState.hubs[id]) {
+          appState.hubs[id].x = x;
+          appState.hubs[id].y = y;
+          const el = document.querySelector(`.hub-node[data-id="${CSS.escape(id)}"]`);
+          if (el) { el.style.left = x + 'px'; el.style.top = y + 'px'; }
+          renderStrings();
+        } else if (type === 'pin') {
+          const p = appState.pins.find((item) => item.id === id);
+          if (p) {
+            p.x = x;
+            p.y = y;
+            const el = document.querySelector(`.pin-node[data-id="${CSS.escape(id)}"]`);
+            if (el) { el.style.left = x + 'px'; el.style.top = y + 'px'; }
+            renderStrings();
+          }
+        }
+        saveBoardLocally();
+      } else if (data.action === 'DELETE_PIN' && data.payload) {
+        appState.pins = appState.pins.filter((p) => p.id !== data.payload);
+        saveBoardLocally();
+        renderAll();
+      } else if (data.action === 'UPSERT_HUB' && data.payload) {
+        appState.hubs[data.payload.id] = data.payload;
+        saveBoardLocally();
+        renderAll();
+      } else if (data.action === 'DELETE_HUB' && data.payload) {
+        delete appState.hubs[data.payload];
+        saveBoardLocally();
+        renderAll();
+      } else if (data.action === 'FULL_SYNC' && data.payload) {
+        const clean = sanitizeBoardData(data.payload);
+        appState.hubs = clean.hubs;
+        appState.pins = clean.pins;
+        saveBoardLocally();
+        renderAll();
+      }
+    }
+
+    if (bc) {
+      bc.onmessage = (ev) => applyRemoteEvent(ev.data);
+    }
+
+    function broadcastSync(action, payload) {
+      saveBoardLocally();
+      if (window.__cloudPush) {
+        window.__cloudPush(action, payload);
+      }
+      const msgObj = { sender: PEER_ID, action, payload };
+      if (bc) {
+        try { bc.postMessage(msgObj); } catch (e) {}
+      }
+      // Only use ntfy SSE relay when Cloud Firestore is NOT active (prevents dual-sync race conditions)
+      if (!appState.cloudActive) {
+        try {
+          let relayPayload = payload;
+          if (payload && typeof payload === 'object' && payload.img && payload.img.startsWith('data:')) {
+            relayPayload = Object.assign({}, payload, {
+              img: makeTypographicPoster(payload.title || 'New Pin'),
+              isRelayFallback: true
+            });
+          }
+          const msg = JSON.stringify({ sender: PEER_ID, action, payload: relayPayload });
+          if (msg.length < 3800) {
+            fetch(NTFY_TOPIC, { method: 'POST', body: msg }).catch(() => {});
+          }
+        } catch (e) {}
+      }
+    }
+
+    function startLiveRelay() {
+      try {
+        sseSource = new EventSource(NTFY_TOPIC + '/sse');
+        sseSource.onmessage = (ev) => {
+          if (appState.cloudActive) return;
+          try {
+            const outer = JSON.parse(ev.data);
+            if (!outer || !outer.message) return;
+            applyRemoteEvent(JSON.parse(outer.message));
+          } catch (e) {}
+        };
+      } catch (e) {}
+    }
+
+    function disableLiveRelayForCloud() {
+      appState.cloudActive = true;
+      if (sseSource) {
+        try { sseSource.close(); } catch (e) {}
+        sseSource = null;
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. INFINITE CANVAS PAN, ZOOM, WAYFINDER & MULTI-SELECT ENGINE
+    // -------------------------------------------------------------------------
+    const viewport = document.getElementById('canvas-viewport');
+    const world = document.getElementById('canvas-world');
+    const marqueeEl = document.getElementById('marquee-box');
+    let cam = { x: window.innerWidth / 2, y: window.innerHeight / 2, zoom: 0.85 };
+
+    let pointers = new Map();
+    let pinchStartDist = 0;
+    let pinchStartZoom = 1;
+    let activeGesture = null;
+
+    function applyCamera(smooth = false) {
+      if (smooth) {
+        world.style.transition = 'transform 0.38s cubic-bezier(0.22, 1, 0.36, 1)';
+        setTimeout(() => { world.style.transition = ''; }, 390);
+      }
+      world.style.transform = `translate3d(${cam.x}px, ${cam.y}px, 0) scale(${cam.zoom})`;
+      viewport.style.backgroundPosition = `${cam.x}px ${cam.y}px`;
+      viewport.style.backgroundSize = `${32 * cam.zoom}px ${32 * cam.zoom}px`;
+      document.getElementById('zoom-label').textContent = `${Math.round(cam.zoom * 100)}%`;
+      updateWayfinderVisibility();
+    }
+
+    function updateWayfinderVisibility() {
+      const wf = document.getElementById('wayfinder-btn');
+      if (!wf) return;
+      const hubs = Object.values(appState.hubs);
+      if (!hubs.length) { wf.classList.add('hidden'); return; }
+
+      const anyVisible = hubs.some((h) => {
+        const sx = h.x * cam.zoom + cam.x;
+        const sy = h.y * cam.zoom + cam.y;
+        return sx > -180 && sx < window.innerWidth + 180 && sy > -120 && sy < window.innerHeight + 180;
+      });
+      wf.classList.toggle('hidden', anyVisible);
+      wf.classList.toggle('flex', !anyVisible);
+    }
+
+    function centerBoard() {
+      const hubs = Object.values(appState.hubs);
+      const pins = appState.pins;
+      const allPts = [
+        ...hubs.map((h) => ({ x: h.x, y: h.y, pad: 150 })),
+        ...pins.map((p) => ({ x: p.x, y: p.y, pad: 140 }))
+      ];
+      if (!allPts.length) {
+        cam = { x: window.innerWidth / 2, y: window.innerHeight / 2, zoom: 0.85 };
+        applyCamera(true);
+        return;
+      }
+
+      const minX = Math.min(...allPts.map((pt) => pt.x - pt.pad));
+      const maxX = Math.max(...allPts.map((pt) => pt.x + pt.pad));
+      const minY = Math.min(...allPts.map((pt) => pt.y - pt.pad));
+      const maxY = Math.max(...allPts.map((pt) => pt.y + pt.pad));
+
+      const spanW = Math.max(400, maxX - minX);
+      const spanH = Math.max(300, maxY - minY);
+      const availW = window.innerWidth - 60;
+      const availH = window.innerHeight - 120;
+
+      cam.zoom = Math.min(1.0, Math.max(0.32, Math.min(availW / spanW, availH / spanH)));
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      cam.x = window.innerWidth / 2 - cx * cam.zoom;
+      cam.y = (window.innerHeight + 28) / 2 - cy * cam.zoom;
+      applyCamera(true);
+    }
+
+    function panToPoint(wx, wy, targetZoom = Math.max(cam.zoom, 0.85)) {
+      cam.zoom = targetZoom;
+      cam.x = window.innerWidth / 2 - wx * cam.zoom;
+      cam.y = (window.innerHeight + 28) / 2 - wy * cam.zoom;
+      applyCamera(true);
+    }
+
+    function stepZoom(delta) {
+      const next = Math.min(Math.max(0.3, cam.zoom + delta), 2.2);
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      cam.x = cx - (cx - cam.x) * (next / cam.zoom);
+      cam.y = cy - (cy - cam.y) * (next / cam.zoom);
+      cam.zoom = next;
+      applyCamera(true);
+    }
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.08 : 0.92;
+      const next = Math.min(Math.max(0.3, cam.zoom * factor), 2.2);
+      cam.x = e.clientX - (e.clientX - cam.x) * (next / cam.zoom);
+      cam.y = e.clientY - (e.clientY - cam.y) * (next / cam.zoom);
+      cam.zoom = next;
+      applyCamera(false);
+    }, { passive: false });
+
+    function findNearestHubAt(wx, wy, maxDist = 145) {
+      let best = null;
+      let bestD = maxDist;
+      Object.values(appState.hubs).forEach((h) => {
+        const d = Math.hypot(h.x - wx, h.y - wy);
+        if (d < bestD) {
+          bestD = d;
+          best = h;
+        }
+      });
+      return best;
+    }
+
+    // Multi-Select Helpers
+    function toggleSelectMode() {
+      appState.selectMode = !appState.selectMode;
+      const btn = document.getElementById('select-mode-btn');
+      if (btn) {
+        btn.classList.toggle('bg-cyanpop', appState.selectMode);
+        btn.classList.toggle('text-ink', appState.selectMode);
+      }
+      if (!appState.selectMode) clearSelection();
+      else toast('☑️ Multi-select active: Tap cards or drag a box to select multiple');
+    }
+
+    function togglePinSelection(pinId) {
+      if (appState.selectedPinIds.has(pinId)) appState.selectedPinIds.delete(pinId);
+      else appState.selectedPinIds.add(pinId);
+      syncSelectionUI();
+    }
+
+    function clearSelection() {
+      appState.selectedPinIds.clear();
+      syncSelectionUI();
+    }
+
+    function syncSelectionUI() {
+      document.querySelectorAll('.pin-node').forEach((el) => {
+        el.classList.toggle('selected-pin', appState.selectedPinIds.has(el.dataset.id));
+      });
+      const bar = document.getElementById('bulk-action-bar');
+      const countLbl = document.getElementById('bulk-count-label');
+      const sel = document.getElementById('bulk-tag-select');
+      const count = appState.selectedPinIds.size;
+
+      if (count > 0) {
+        bar.classList.remove('hidden');
+        bar.classList.add('flex');
+        countLbl.textContent = `${count} SELECTED`;
+        sel.innerHTML = `<option value="">Move to #Tag...</option>` +
+          Object.keys(appState.hubs).map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+      } else {
+        bar.classList.add('hidden');
+        bar.classList.remove('flex');
+      }
+    }
+
+    function bulkMoveSelectedPins(newTag) {
+      const hub = appState.hubs[newTag];
+      if (!hub || !appState.selectedPinIds.size) return;
+      const ids = Array.from(appState.selectedPinIds);
+      ids.forEach((id, i) => {
+        const p = appState.pins.find((item) => item.id === id);
+        if (p) {
+          p.hashtag = newTag;
+          const angle = (i / Math.max(1, ids.length)) * Math.PI * 2;
+          p.x = Math.round(hub.x + Math.cos(angle) * 270);
+          p.y = Math.round(hub.y + Math.sin(angle) * 270);
+        }
+      });
+      clearSelection();
+      broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+      renderAll();
+      panToPoint(hub.x, hub.y, 0.85);
+      toast(`🔗 Moved ${ids.length} pins to ${newTag}!`);
+    }
+
+    function bulkDeleteSelectedPins() {
+      const ids = Array.from(appState.selectedPinIds);
+      if (!ids.length) return;
+      const removedPins = appState.pins.filter((p) => appState.selectedPinIds.has(p.id));
+      appState.lastDeletedBackup = { type: 'pins', items: removedPins };
+      appState.pins = appState.pins.filter((p) => !appState.selectedPinIds.has(p.id));
+      clearSelection();
+      broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+      renderAll();
+      toast(`🗑️ Deleted ${removedPins.length} pin(s)`, 'UNDO ↺', undoLastDelete);
+    }
+
+    viewport.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      if (e.target.closest('.hype-pill, .card-quick-action')) return;
+
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (pointers.size === 2) {
+        activeGesture = null;
+        marqueeEl.style.display = 'none';
+        const pts = Array.from(pointers.values());
+        pinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        pinchStartZoom = cam.zoom;
+        return;
+      }
+
+      const nodeEl = e.target.closest('.canvas-node');
+      if (nodeEl) {
+        const nType = nodeEl.dataset.type;
+        const nId = nodeEl.dataset.id;
+
+        if (nType === 'pin' && (e.shiftKey || appState.selectMode)) {
+          togglePinSelection(nId);
+          return;
+        }
+
+        // Capture starting positions of all selected pins if dragging a selected pin
+        const groupOffsets = {};
+        if (nType === 'pin' && appState.selectedPinIds.has(nId)) {
+          appState.selectedPinIds.forEach((sid) => {
+            const sp = appState.pins.find((item) => item.id === sid);
+            if (sp) groupOffsets[sid] = { x: sp.x, y: sp.y };
+          });
+        }
+
+        activeGesture = {
+          mode: 'node',
+          el: nodeEl,
+          nodeType: nType,
+          nodeId: nId,
+          startX: e.clientX,
+          startY: e.clientY,
+          lastX: e.clientX,
+          lastY: e.clientY,
+          moved: 0,
+          hoverHubId: null,
+          groupOffsets
+        };
+      } else if (e.shiftKey || appState.selectMode) {
+        activeGesture = {
+          mode: 'marquee',
+          startX: e.clientX,
+          startY: e.clientY,
+          curX: e.clientX,
+          curY: e.clientY
+        };
+        marqueeEl.style.display = 'block';
+        marqueeEl.style.left = e.clientX + 'px';
+        marqueeEl.style.top = e.clientY + 'px';
+        marqueeEl.style.width = '0px';
+        marqueeEl.style.height = '0px';
+      } else {
+        if (appState.selectedPinIds.size > 0) clearSelection();
+        activeGesture = {
+          mode: 'pan',
+          startX: e.clientX - cam.x,
+          startY: e.clientY - cam.y
+        };
+        viewport.classList.add('panning');
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (pointers.has(e.pointerId)) {
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      }
+
+      if (pointers.size === 2 && pinchStartDist > 0) {
+        const pts = Array.from(pointers.values());
+        const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+        const midX = (pts[0].x + pts[1].x) / 2;
+        const midY = (pts[0].y + pts[1].y) / 2;
+        const next = Math.min(Math.max(0.3, pinchStartZoom * (dist / pinchStartDist)), 2.2);
+        cam.x = midX - (midX - cam.x) * (next / cam.zoom);
+        cam.y = midY - (midY - cam.y) * (next / cam.zoom);
+        cam.zoom = next;
+        applyCamera(false);
+        return;
+      }
+
+      if (!activeGesture) return;
+
+      if (activeGesture.mode === 'pan') {
+        cam.x = e.clientX - activeGesture.startX;
+        cam.y = e.clientY - activeGesture.startY;
+        applyCamera(false);
+      } else if (activeGesture.mode === 'marquee') {
+        activeGesture.curX = e.clientX;
+        activeGesture.curY = e.clientY;
+        const x1 = Math.min(activeGesture.startX, activeGesture.curX);
+        const y1 = Math.min(activeGesture.startY, activeGesture.curY);
+        const x2 = Math.max(activeGesture.startX, activeGesture.curX);
+        const y2 = Math.max(activeGesture.startY, activeGesture.curY);
+        marqueeEl.style.left = x1 + 'px';
+        marqueeEl.style.top = y1 + 'px';
+        marqueeEl.style.width = (x2 - x1) + 'px';
+        marqueeEl.style.height = (y2 - y1) + 'px';
+
+        appState.selectedPinIds.clear();
+        appState.pins.forEach((p) => {
+          const sx = p.x * cam.zoom + cam.x;
+          const sy = p.y * cam.zoom + cam.y;
+          if (sx >= x1 && sx <= x2 && sy >= y1 && sy <= y2) {
+            appState.selectedPinIds.add(p.id);
+          }
+        });
+        syncSelectionUI();
+      } else if (activeGesture.mode === 'node') {
+        const dxScreen = e.clientX - activeGesture.lastX;
+        const dyScreen = e.clientY - activeGesture.lastY;
+        activeGesture.moved += Math.hypot(dxScreen, dyScreen);
+        activeGesture.lastX = e.clientX;
+        activeGesture.lastY = e.clientY;
+
+        if (activeGesture.moved < 6) return;
+
+        activeGesture.el.classList.add('dragging');
+        appState.highlightedNodeId = activeGesture.nodeId;
+        const dxWorld = dxScreen / cam.zoom;
+        const dyWorld = dyScreen / cam.zoom;
+
+        if (activeGesture.nodeType === 'hub') {
+          const hub = appState.hubs[activeGesture.nodeId];
+          if (hub) {
+            hub.x = Math.round(hub.x + dxWorld);
+            hub.y = Math.round(hub.y + dyWorld);
+            activeGesture.el.style.left = hub.x + 'px';
+            activeGesture.el.style.top = hub.y + 'px';
+            renderStrings();
+          }
+        } else if (activeGesture.nodeType === 'pin') {
+          const pin = appState.pins.find((p) => p.id === activeGesture.nodeId);
+          if (pin) {
+            const helper = document.getElementById('canvas-helper-pill');
+            if (helper) helper.classList.remove('hidden');
+
+            // Move either the multi-selected group or the single pin
+            if (appState.selectedPinIds.has(pin.id) && appState.selectedPinIds.size > 1) {
+              appState.selectedPinIds.forEach((sid) => {
+                const sp = appState.pins.find((item) => item.id === sid);
+                if (sp) {
+                  sp.x = Math.round(sp.x + dxWorld);
+                  sp.y = Math.round(sp.y + dyWorld);
+                  const selEl = document.querySelector(`.pin-node[data-id="${CSS.escape(sid)}"]`);
+                  if (selEl) {
+                    selEl.style.left = sp.x + 'px';
+                    selEl.style.top = sp.y + 'px';
+                  }
+                }
+              });
+            } else {
+              pin.x = Math.round(pin.x + dxWorld);
+              pin.y = Math.round(pin.y + dyWorld);
+              activeGesture.el.style.left = pin.x + 'px';
+              activeGesture.el.style.top = pin.y + 'px';
+            }
+
+            const targetHub = findNearestHubAt(pin.x, pin.y, 145);
+            document.querySelectorAll('.hub-node.drop-target').forEach((el) => el.classList.remove('drop-target'));
+            if (targetHub && targetHub.id !== pin.hashtag) {
+              activeGesture.hoverHubId = targetHub.id;
+              const targetEl = document.querySelector(`.hub-node[data-id="${CSS.escape(targetHub.id)}"]`);
+              if (targetEl) targetEl.classList.add('drop-target');
+              if (helper) helper.textContent = `🔗 Release to re-link cable to ${targetHub.id}!`;
+            } else {
+              activeGesture.hoverHubId = null;
+              if (helper) helper.textContent = `💡 Drop onto any #Hashtag sticker to re-wire cable!`;
+            }
+            renderStrings();
+          }
+        }
+      }
+    });
+
+    function finishPointerGesture(e) {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinchStartDist = 0;
+
+      const helper = document.getElementById('canvas-helper-pill');
+      if (helper) helper.classList.add('hidden');
+      marqueeEl.style.display = 'none';
+
+      if (activeGesture) {
+        if (activeGesture.mode === 'node') {
+          activeGesture.el.classList.remove('dragging');
+          document.querySelectorAll('.hub-node.drop-target').forEach((el) => el.classList.remove('drop-target'));
+          appState.highlightedNodeId = null;
+
+          if (activeGesture.moved < 6) {
+            if (activeGesture.nodeType === 'hub') {
+              openGalleryPage(activeGesture.nodeId);
+            } else if (activeGesture.nodeType === 'pin') {
+              openCardModal(activeGesture.nodeId);
+            }
+          } else {
+            const id = activeGesture.nodeId;
+            if (activeGesture.nodeType === 'hub' && appState.hubs[id]) {
+              broadcastSync('MOVE_NODE', { type: 'hub', id, x: appState.hubs[id].x, y: appState.hubs[id].y });
+            } else if (activeGesture.nodeType === 'pin') {
+              const p = appState.pins.find((item) => item.id === id);
+              if (p) {
+                if (activeGesture.hoverHubId && appState.hubs[activeGesture.hoverHubId]) {
+                  const newHub = appState.hubs[activeGesture.hoverHubId];
+                  if (appState.selectedPinIds.has(p.id) && appState.selectedPinIds.size > 1) {
+                    bulkMoveSelectedPins(newHub.id);
+                  } else {
+                    p.hashtag = newHub.id;
+                    const angle = Math.random() * Math.PI * 2;
+                    p.x = Math.round(newHub.x + Math.cos(angle) * 255);
+                    p.y = Math.round(newHub.y + Math.sin(angle) * 255);
+                    renderAll();
+                    broadcastSync('UPDATE_PIN', p);
+                    toast(`🔗 Re-linked cable to ${newHub.id}!`);
+                  }
+                } else if (appState.selectedPinIds.has(p.id) && appState.selectedPinIds.size > 1) {
+                  broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+                } else {
+                  broadcastSync('MOVE_NODE', { type: 'pin', id, x: p.x, y: p.y });
+                }
+              }
+            }
+          }
+        }
+        renderStrings();
+        activeGesture = null;
+      }
+      viewport.classList.remove('panning');
+    }
+
+    window.addEventListener('pointerup', finishPointerGesture);
+    window.addEventListener('pointercancel', finishPointerGesture);
+
+    // -------------------------------------------------------------------------
+    // 6. KEYED DOM RENDER SYSTEM & PERIMETER-ANCHORED CABLE ENGINE
+    // -------------------------------------------------------------------------
+    function renderAll() {
+      renderTopBar();
+      renderNodes();
+      renderStrings();
+      if (appState.activeGalleryTag) renderGalleryGrid();
+    }
+
+    function renderTopBar() {
+      const strip = document.getElementById('top-hashtag-strip');
+      const hubs = Object.values(appState.hubs);
+
+      strip.innerHTML = hubs.map((h) => {
+        const count = appState.pins.filter((p) => p.hashtag === h.id).length;
+        return `
+          <button type="button" onclick="panToPoint(${h.x}, ${h.y}, 0.9)"
+            ondblclick="openGalleryPage('${esc(h.id)}')"
+            title="Click to pan • Double-click to open gallery"
+            class="px-2.5 py-1 rounded-xl font-poplar text-xs text-ink border-2 border-ink shrink-0 nb-btn flex items-center gap-1"
+            style="background-color:${h.color}">
+            <span>${esc(h.id)}</span>
+            <span class="px-1.5 bg-ink text-white font-mono text-[9px] rounded">${count}</span>
+          </button>
+        `;
+      }).join('') + `
+        <button type="button" onclick="openTagModal()"
+          class="px-2.5 py-1 rounded-xl bg-acid hover:bg-yellowpop text-ink font-poplar text-xs border-2 border-ink shrink-0 nb-btn">
+          + #TAG
+        </button>
+      `;
+    }
+
+    function getHypeBadgeProps(pin) {
+      const mine = getMyPinHype(pin.id);
+      if (mine === 2) {
+        return {
+          icon: '🔥🔥',
+          cls: 'bg-raspberry text-white border-ink',
+          title: 'Mega Hyped (2x)! Tap to reset'
+        };
+      }
+      if (mine === 1) {
+        return {
+          icon: '🔥',
+          cls: 'bg-acid text-ink border-ink',
+          title: 'Hyped (1x)! Tap again to Mega Hype'
+        };
+      }
+      return {
+        icon: '🔥',
+        cls: 'bg-ink text-acid border-ink',
+        title: 'Tap once to Hype, twice to Mega Hype'
+      };
+    }
+
+    function computePinAnchor(hub, pin) {
+      const dx = hub.x - pin.x;
+      const dy = hub.y - pin.y;
+      const halfW = 107;
+      const halfH = 108;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return { ax: pin.x, ay: pin.y - halfH, lx: '50%', ly: '0%' };
+      const sx = Math.abs(dx) > 0 ? halfW / Math.abs(dx) : Infinity;
+      const sy = Math.abs(dy) > 0 ? halfH / Math.abs(dy) : Infinity;
+      const t = Math.min(sx, sy);
+      const offX = dx * t;
+      const offY = dy * t;
+      return {
+        ax: pin.x + offX,
+        ay: pin.y + offY,
+        lx: `${Math.round(((offX + halfW) / (halfW * 2)) * 100)}%`,
+        ly: `${Math.round(((offY + halfH) / (halfH * 2)) * 100)}%`
+      };
+    }
+
+    // Targeted Single-Card DOM Updater (Prevents image reload flicker on Hype/Edit)
+    function updateSinglePinDOM(pin) {
+      const el = document.querySelector(`.pin-node[data-id="${CSS.escape(pin.id)}"]`);
+      if (!el) {
+        renderNodes();
+        return;
+      }
+      const hub = appState.hubs[pin.hashtag] || Object.values(appState.hubs)[0];
+      const hype = getHypeBadgeProps(pin);
+      const isMega = getMyPinHype(pin.id) === 2;
+      el.classList.toggle('mega-hyped', isMega);
+
+      const tagSpan = el.querySelector('.pin-tag-badge');
+      if (tagSpan && hub) {
+        tagSpan.textContent = pin.hashtag;
+        tagSpan.style.backgroundColor = hub.color;
+      }
+
+      const hypeBtn = el.querySelector('.hype-pill');
+      if (hypeBtn) {
+        hypeBtn.className = `hype-pill px-2 py-0.5 rounded-full border font-mono text-[9px] font-bold ${hype.cls}`;
+        hypeBtn.title = hype.title;
+        hypeBtn.textContent = `${hype.icon} ${pin.likes || 0}`;
+      }
+
+      const titleDiv = el.querySelector('.pin-title-text');
+      if (titleDiv) titleDiv.textContent = pin.title;
+
+      const noteDiv = el.querySelector('.pin-note-preview');
+      if (noteDiv) {
+        noteDiv.textContent = pin.notes || '';
+        noteDiv.classList.toggle('hidden', !pin.notes);
+      }
+
+      const authorDiv = el.querySelector('.pin-author-text');
+      if (authorDiv) {
+        const cCount = Array.isArray(pin.comments) ? pin.comments.length : 0;
+        authorDiv.textContent = `by ${pin.author || 'Member'}${cCount ? ` • 💬 ${cCount}` : ''}`;
+      }
+    }
+
+    function renderNodes() {
+      const layer = document.getElementById('nodes-layer');
+      let html = '';
+
+      Object.values(appState.hubs).forEach((h) => {
+        const hubPins = appState.pins.filter((p) => p.hashtag === h.id);
+        const count = hubPins.length;
+        const scale = Math.min(1.55, 1 + count * 0.065);
+        const hasSearchMatch = !appState.searchQuery ||
+          h.id.toLowerCase().includes(appState.searchQuery) ||
+          hubPins.some(isPinMatchingSearch);
+
+        const shapeCls =
+          h.shape === 'oval' ? 'gelato-oval' :
+          h.shape === 'square' ? 'gelato-square' :
+          h.shape === 'hex' ? 'gelato-hex' : 'gelato-pill';
+
+        const drivePill = h.gdrive
+          ? `<a href="${esc(h.gdrive)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"
+                class="mt-1 inline-block px-2 py-0.5 rounded-full bg-white text-ink border border-ink font-mono text-[9px] font-bold hover:bg-yellowpop">
+               📁 DRIVE ↗
+             </a>`
+          : '';
+
+        const content = `
+          <div class="font-poplar text-xl sm:text-2xl text-ink leading-none">${esc(h.id)}</div>
+          <div class="mt-1 px-2 py-0.5 rounded-full bg-ink text-acid font-mono text-[9px] font-bold inline-block">
+            ${count} ${count === 1 ? 'PIN' : 'PINS'} • VIEW
+          </div>
+          ${drivePill}
+        `;
+
+        html += `
+          <div data-type="hub" data-id="${esc(h.id)}"
+               onmouseenter="setHighlightNode('${esc(h.id)}')"
+               onmouseleave="clearHighlightNode()"
+               class="canvas-node hub-node ${hasSearchMatch ? '' : 'search-dimmed'}"
+               style="left:${h.x}px; top:${h.y}px; transform:translate(-50%, -50%) scale(${scale});">
+            <div class="${shapeCls} flex flex-col items-center justify-center text-center" style="background-color:${h.color};">
+              ${h.shape === 'hex' ? `<div class="gelato-hex-inner">${content}</div>` : content}
+            </div>
+          </div>
+        `;
+      });
+
+      appState.pins.forEach((p, idx) => {
+        const hub = appState.hubs[p.hashtag] || Object.values(appState.hubs)[0];
+        if (!hub) return;
+        const tilt = ((idx % 5) - 2) * 1.1;
+        const anchor = computePinAnchor(hub, p);
+        const hype = getHypeBadgeProps(p);
+        const isMega = getMyPinHype(p.id) === 2;
+        const isSelected = appState.selectedPinIds.has(p.id);
+        const matches = isPinMatchingSearch(p);
+        const searchCls = appState.searchQuery ? (matches ? 'search-match' : 'search-dimmed') : '';
+        const cCount = Array.isArray(p.comments) ? p.comments.length : 0;
+
+        html += `
+          <div data-type="pin" data-id="${esc(p.id)}"
+               onmouseenter="setHighlightNode('${esc(p.id)}')"
+               onmouseleave="clearHighlightNode()"
+               class="canvas-node pin-node ${isMega ? 'mega-hyped' : ''} ${isSelected ? 'selected-pin' : ''} ${searchCls}"
+               style="left:${p.x}px; top:${p.y}px; transform:translate(-50%, -50%) rotate(${tilt}deg);">
+            <span class="pin-anchor-port" style="left:${anchor.lx}; top:${anchor.ly}; background-color:${hub.color};"></span>
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              <span class="pin-tag-badge px-2 py-0.5 rounded-full font-poplar text-[10px] text-ink border border-ink truncate max-w-[122px]"
+                    style="background-color:${hub.color}">
+                ${esc(p.hashtag)}
+              </span>
+              <button type="button" data-hype-pin="${esc(p.id)}"
+                      onclick="cyclePinHype('${esc(p.id)}', event)"
+                      title="${hype.title}"
+                      class="hype-pill px-2 py-0.5 rounded-full border font-mono text-[9px] font-bold ${hype.cls}">
+                ${hype.icon} ${p.likes || 0}
+              </button>
+            </div>
+            <div class="w-full h-32 rounded-xl bg-ink border-2 border-ink overflow-hidden">
+              <img src="${esc(p.img)}" alt="${esc(p.title)}" onerror="fallbackImg(this)"
+                   class="w-full h-full object-cover pointer-events-none" />
+            </div>
+            <div class="mt-1.5 flex items-center justify-between gap-1">
+              <div class="min-w-0 flex-1">
+                <div class="pin-title-text font-bold text-xs truncate">${esc(p.title)}</div>
+                <div class="pin-note-preview text-[10px] opacity-75 truncate ${p.notes ? '' : 'hidden'}">${esc(p.notes)}</div>
+                <div class="pin-author-text font-mono text-[9px] opacity-65 truncate">by ${esc(p.author || 'Member')}${cCount ? ` • 💬 ${cCount}` : ''}</div>
+              </div>
+              <button type="button" onclick="sharePinToWhatsApp('${esc(p.id)}', event)"
+                      title="Share pin to WhatsApp group"
+                      class="card-quick-action w-6 h-6 rounded-lg bg-[#25D366] text-ink border border-ink flex items-center justify-center text-[11px] shrink-0 nb-btn">
+                💬
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      layer.innerHTML = html;
+    }
+
+    function setHighlightNode(nodeId) {
+      if (activeGesture) return;
+      appState.highlightedNodeId = nodeId;
+      renderStrings();
+    }
+
+    function clearHighlightNode() {
+      if (activeGesture) return;
+      appState.highlightedNodeId = null;
+      renderStrings();
+    }
+
+    function renderStrings() {
+      const svg = document.getElementById('strings-layer');
+      const strokeBg = document.documentElement.classList.contains('dark') ? '#000000' : '#101010';
+      let paths = '';
+
+      appState.pins.forEach((p) => {
+        const hub = appState.hubs[p.hashtag] || Object.values(appState.hubs)[0];
+        if (!hub) return;
+
+        const anchor = computePinAnchor(hub, p);
+        const dist = Math.hypot(anchor.ax - hub.x, anchor.ay - hub.y);
+        const sag = Math.min(75, Math.max(24, dist * 0.14));
+        const mx = (hub.x + anchor.ax) / 2;
+        const my = (hub.y + anchor.ay) / 2 + sag;
+
+        const portEl = document.querySelector(`.pin-node[data-id="${CSS.escape(p.id)}"] .pin-anchor-port`);
+        if (portEl) {
+          portEl.style.left = anchor.lx;
+          portEl.style.top = anchor.ly;
+        }
+
+        const isHighlighted = appState.highlightedNodeId &&
+          (appState.highlightedNodeId === p.id || appState.highlightedNodeId === hub.id);
+        const dimmedCls = (appState.searchQuery && !isPinMatchingSearch(p)) ? 'search-dimmed' : '';
+
+        paths += `
+          <g class="cable-group ${isHighlighted ? 'active' : ''} ${dimmedCls}">
+            <path class="cable-outline" d="M ${hub.x} ${hub.y} Q ${mx} ${my} ${anchor.ax} ${anchor.ay}" fill="none" stroke="${strokeBg}" stroke-width="5.2" stroke-linecap="round"/>
+            <path class="cable-core" d="M ${hub.x} ${hub.y} Q ${mx} ${my} ${anchor.ax} ${anchor.ay}" fill="none" stroke="${hub.color}" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        `;
+      });
+
+      svg.innerHTML = paths;
+    }
+
+    function fallbackImg(imgEl) {
+      if (!imgEl.dataset.proxied && imgEl.src && imgEl.src.startsWith('http')) {
+        imgEl.dataset.proxied = '1';
+        imgEl.src = 'https://wsrv.nl/?url=' + encodeURIComponent(imgEl.src) + '&w=600';
+      } else {
+        imgEl.src = makeTypographicPoster(imgEl.alt || 'ORATORS IDEA');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 7. COLLISION-FREE ANIMATED TIDY ENGINE
+    // -------------------------------------------------------------------------
+    let tidyAnimFrame = null;
+
+    function tidyBoard() {
+      if (tidyAnimFrame) cancelAnimationFrame(tidyAnimFrame);
+
+      const tags = Object.keys(appState.hubs);
+      const cols = Math.max(1, Math.ceil(Math.sqrt(tags.length)));
+
+      const maxPinsInCluster = Math.max(1, ...tags.map((t) => appState.pins.filter((p) => p.hashtag === t).length));
+      const outerRing = Math.floor((maxPinsInCluster - 1) / 6);
+      const clusterSpan = 860 + outerRing * 420;
+
+      const startHubPos = {};
+      const targetHubPos = {};
+      const startPinPos = {};
+      const targetPinPos = {};
+
+      tags.forEach((tag, i) => {
+        const hub = appState.hubs[tag];
+        startHubPos[tag] = { x: hub.x, y: hub.y };
+
+        const c = i % cols;
+        const r = Math.floor(i / cols);
+        const totalRows = Math.ceil(tags.length / cols);
+        targetHubPos[tag] = {
+          x: Math.round((c - (cols - 1) / 2) * clusterSpan),
+          y: Math.round((r - (totalRows - 1) / 2) * (clusterSpan * 0.78))
+        };
+
+        const pins = appState.pins.filter((p) => p.hashtag === tag);
+        pins.forEach((pin, idx) => {
+          startPinPos[pin.id] = { x: pin.x, y: pin.y };
+          const ring = Math.floor(idx / 6);
+          const countInRing = Math.min(6, pins.length - ring * 6);
+          const radius = 275 + ring * 235;
+          const angle = ((idx % 6) / countInRing) * Math.PI * 2 + ring * 0.52 - Math.PI / 6;
+
+          targetPinPos[pin.id] = {
+            x: Math.round(targetHubPos[tag].x + Math.cos(angle) * radius),
+            y: Math.round(targetHubPos[tag].y + Math.sin(angle) * radius)
+          };
+        });
+      });
+
+      const duration = 450;
+      const t0 = performance.now();
+
+      function step(now) {
+        const rawT = Math.min(1, (now - t0) / duration);
+        const ease = 1 - Math.pow(1 - rawT, 3);
+
+        tags.forEach((tag) => {
+          const hub = appState.hubs[tag];
+          if (!hub) return;
+          hub.x = Math.round(startHubPos[tag].x + (targetHubPos[tag].x - startHubPos[tag].x) * ease);
+          hub.y = Math.round(startHubPos[tag].y + (targetHubPos[tag].y - startHubPos[tag].y) * ease);
+          const el = document.querySelector(`.hub-node[data-id="${CSS.escape(tag)}"]`);
+          if (el) {
+            el.style.left = hub.x + 'px';
+            el.style.top = hub.y + 'px';
+          }
+        });
+
+        appState.pins.forEach((pin) => {
+          if (!targetPinPos[pin.id]) return;
+          pin.x = Math.round(startPinPos[pin.id].x + (targetPinPos[pin.id].x - startPinPos[pin.id].x) * ease);
+          pin.y = Math.round(startPinPos[pin.id].y + (targetPinPos[pin.id].y - startPinPos[pin.id].y) * ease);
+          const el = document.querySelector(`.pin-node[data-id="${CSS.escape(pin.id)}"]`);
+          if (el) {
+            el.style.left = pin.x + 'px';
+            el.style.top = pin.y + 'px';
+          }
+        });
+
+        renderStrings();
+
+        if (rawT < 1) {
+          tidyAnimFrame = requestAnimationFrame(step);
+        } else {
+          tidyAnimFrame = null;
+          broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+          centerBoard();
+          toast('🧲 Board tidied cleanly!');
+        }
+      }
+
+      tidyAnimFrame = requestAnimationFrame(step);
+    }
+
+    // -------------------------------------------------------------------------
+    // 8. IDEA PUTTING, MULTI-STAGING & DIRECT DROP ENGINE
+    // -------------------------------------------------------------------------
+    function openPostModal(defaultTag = null) {
+      const modal = document.getElementById('post-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      const tags = Object.keys(appState.hubs);
+      appState.selectedPostTag = (defaultTag && appState.hubs[defaultTag]) ? defaultTag : tags[0];
+      appState.stagedItems = [];
+
+      try {
+        const savedAuthor = localStorage.getItem(AUTHOR_STORAGE_KEY);
+        if (savedAuthor) document.getElementById('post-author-input').value = savedAuthor;
+      } catch (e) {}
+
+      renderStagedTray();
+      refreshDefaultPreview();
+      renderPostTagPills();
+    }
+
+    function closePostModal() {
+      const modal = document.getElementById('post-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function refreshDefaultPreview() {
+      if (appState.stagedItems.length > 0) return;
+      const title = document.getElementById('post-title-input').value.trim() || 'ORATORS IDEA';
+      const hub = appState.hubs[appState.selectedPostTag];
+      document.getElementById('post-preview-img').src = makeTypographicPoster(title, '#101010', hub ? hub.color : '#CBFF54');
+    }
+
+    function renderStagedTray() {
+      const tray = document.getElementById('staged-tray');
+      const btn = document.getElementById('post-submit-btn');
+      if (!appState.stagedItems.length) {
+        tray.classList.add('hidden');
+        tray.innerHTML = '';
+        btn.textContent = 'POST TO CANVAS →';
+        return;
+      }
+
+      tray.classList.remove('hidden');
+      btn.textContent = appState.stagedItems.length > 1
+        ? `POST ${appState.stagedItems.length} IDEAS TO CANVAS →`
+        : 'POST TO CANVAS →';
+
+      tray.innerHTML = appState.stagedItems.map((item, idx) => `
+        <div class="relative w-14 h-14 rounded-xl border-2 border-ink overflow-hidden shrink-0 bg-ink">
+          <img src="${esc(item.img)}" class="w-full h-full object-cover" />
+          <button type="button" onclick="removeStagedItem(${idx})"
+            class="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-raspberry text-white text-[10px] font-bold flex items-center justify-center leading-none">
+            ×
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function removeStagedItem(idx) {
+      appState.stagedItems.splice(idx, 1);
+      renderStagedTray();
+      if (appState.stagedItems.length > 0) {
+        document.getElementById('post-preview-img').src = appState.stagedItems[0].img;
+      } else {
+        refreshDefaultPreview();
+      }
+    }
+
+    function renderPostTagPills() {
+      const box = document.getElementById('post-tag-pills');
+      box.innerHTML = Object.values(appState.hubs).map((h) => {
+        const active = h.id === appState.selectedPostTag;
+        return `
+          <button type="button" onclick="appState.selectedPostTag='${esc(h.id)}'; renderPostTagPills(); refreshDefaultPreview();"
+            class="px-3 py-1 rounded-xl font-poplar text-xs text-ink border-2 border-ink transition-transform"
+            style="background-color:${h.color}; opacity:${active ? 1 : 0.42}; transform:scale(${active ? 1.05 : 0.95});">
+            ${esc(h.id)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function extractFirstUrl(raw) {
+      if (!raw) return '';
+      const m = String(raw).match(/https?:\/\/[^\s"'<>]+/i);
+      return m ? m[0] : String(raw).trim();
+    }
+
+    async function pasteClipboardLink() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          const clean = extractFirstUrl(text);
+          document.getElementById('post-url-input').value = clean;
+          handleUrlTyping(clean);
+          toast('📋 Link pasted!');
+          return;
+        }
+      } catch (e) {}
+      document.getElementById('post-url-input').focus();
+    }
+
+    let typingTimer = null;
+    function handleUrlTyping(val) {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(() => fetchUrlPreview(val), 220);
+    }
+
+    async function resolveLinkImage(rawUrl) {
+      const url = extractFirstUrl(rawUrl);
+      if (!url || !/^https?:\/\//i.test(url)) return null;
+
+      if (/\.(jpg|jpeg|png|webp|gif|avif)(\?.*)?$/i.test(url)) {
+        return { img: url, title: 'Visual Idea' };
+      }
+
+      const gd = url.match(/(?:drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)|docs\.google\.com\/(?:document|presentation|spreadsheets)\/d\/)([-\w]{20,})/);
+      if (gd && gd[1]) {
+        return { img: `https://lh3.googleusercontent.com/d/${gd[1]}=w1000`, title: 'Google Drive File' };
+      }
+
+      try {
+        const r = await fetch('https://api.microlink.io/?url=' + encodeURIComponent(url));
+        const j = await r.json();
+        if (j && j.status === 'success' && j.data) {
+          const found = (j.data.image && j.data.image.url) || (j.data.logo && j.data.logo.url);
+          if (found) {
+            return { img: found, title: (j.data.title || '').slice(0, 60) };
+          }
+        }
+      } catch (e) {}
+
+      let domainLabel = 'SHARED LINK';
+      try { domainLabel = new URL(url).hostname.replace(/^www\./, ''); } catch (e) {}
+      return { img: makeTypographicPoster(domainLabel, '#101010', '#26B0FF'), title: domainLabel };
+    }
+
+    async function fetchUrlPreview(rawVal) {
+      const url = extractFirstUrl(rawVal);
+      if (!url || !/^https?:\/\//i.test(url)) return;
+
+      document.getElementById('post-status-text').textContent = 'Fetching link preview...';
+      const res = await resolveLinkImage(url);
+      if (res && res.img) {
+        document.getElementById('post-preview-img').src = res.img;
+        appState.stagedItems = [{ img: res.img, title: res.title || 'Shared Link', url }];
+        renderStagedTray();
+        const titleEl = document.getElementById('post-title-input');
+        if (!titleEl.value && res.title) titleEl.value = res.title;
+        document.getElementById('post-status-text').textContent = '✅ Link preview ready!';
+      }
+    }
+
+    function compressImageFile(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              const MAX = 560;
+              let w = img.width, h = img.height;
+              if (w > h && w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
+              else if (h > MAX) { w = Math.round((w * MAX) / h); h = MAX; }
+              canvas.width = w;
+              canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              const webp = canvas.toDataURL('image/webp', 0.74);
+              resolve((webp && webp.length > 64) ? webp : canvas.toDataURL('image/jpeg', 0.76));
+            } catch (err) {
+              resolve(ev.target.result);
+            }
+          };
+          img.onerror = () => resolve(null);
+          img.src = ev.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleImageFiles(e) {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+
+      document.getElementById('post-status-text').textContent = `Optimizing ${files.length} image(s)...`;
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        const dataUrl = await compressImageFile(file);
+        if (dataUrl) {
+          const cleanName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 42);
+          appState.stagedItems.push({ img: dataUrl, title: cleanName || 'Club Visual Idea', url: '' });
+        }
+      }
+
+      if (appState.stagedItems.length > 0) {
+        document.getElementById('post-preview-img').src = appState.stagedItems[0].img;
+        renderStagedTray();
+        document.getElementById('post-status-text').textContent = `✅ ${appState.stagedItems.length} image(s) staged & ready!`;
+      }
+    }
+
+    function placeNewPinsAroundHub(items, tag, customTitle, author, fallbackUrl, notes = '') {
+      const hub = appState.hubs[tag] || Object.values(appState.hubs)[0];
+      if (!hub) return;
+
+      const uid = getVoterId();
+      items.forEach((item, i) => {
+        const count = appState.pins.filter((p) => p.hashtag === tag).length;
+        const ring = Math.floor(count / 6);
+        const angle = ((count % 6) / 6) * Math.PI * 2 + ring * 0.52 - Math.PI / 6;
+        const radius = 275 + ring * 235;
+
+        const pinId = 'pin_' + Date.now() + '_' + i + '_' + Math.random().toString(36).slice(2, 6);
+        const newPin = {
+          id: pinId,
+          hashtag: tag,
+          title: customTitle || item.title || (fallbackUrl ? 'Shared Visual Link' : 'Club Visual Idea'),
+          author: author || 'Member',
+          notes: notes || '',
+          comments: [],
+          url: item.url || fallbackUrl || '',
+          img: item.img,
+          x: Math.round(hub.x + Math.cos(angle) * radius),
+          y: Math.round(hub.y + Math.sin(angle) * radius),
+          likes: 1,
+          baseLikes: 0,
+          hypeMap: { [uid]: 1 },
+          createdAt: Date.now() + i
+        };
+
+        appState.myHypes[pinId] = 1;
+        saveMyHypes();
+
+        appState.pins.unshift(newPin);
+        broadcastSync('ADD_PIN', newPin);
+      });
+    }
+
+    function submitNewPin(e) {
+      e.preventDefault();
+      const url = extractFirstUrl(document.getElementById('post-url-input').value);
+      const rawTitle = document.getElementById('post-title-input').value.trim();
+      const author = document.getElementById('post-author-input').value.trim() || 'Member';
+      const notes = document.getElementById('post-notes-input').value.trim();
+      const tag = appState.selectedPostTag || Object.keys(appState.hubs)[0];
+
+      try {
+        if (author && author !== 'Member') localStorage.setItem(AUTHOR_STORAGE_KEY, author);
+      } catch (err) {}
+
+      const itemsToPost = appState.stagedItems.length > 0
+        ? appState.stagedItems
+        : [{ img: document.getElementById('post-preview-img').src, title: rawTitle || 'Club Visual Idea', url }];
+
+      placeNewPinsAroundHub(itemsToPost, tag, rawTitle, author, url, notes);
+
+      renderAll();
+      closePostModal();
+
+      if (!appState.activeGalleryTag && appState.pins.length) {
+        panToPoint(appState.pins[0].x, appState.pins[0].y);
+      }
+
+      document.getElementById('post-url-input').value = '';
+      document.getElementById('post-title-input').value = '';
+      document.getElementById('post-notes-input').value = '';
+      appState.stagedItems = [];
+      renderStagedTray();
+      toast(`✨ Posted ${itemsToPost.length} idea(s) to ${tag}!`);
+    }
+
+    // Global Clipboard Paste (`Ctrl+V`)
+    window.addEventListener('paste', (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+      const items = e.clipboardData && e.clipboardData.items;
+      if (items) {
+        for (const item of items) {
+          if (item.type.startsWith('image/')) {
+            openPostModal(appState.activeGalleryTag);
+            const file = item.getAsFile();
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('post-file-input').files = dt.files;
+            handleImageFiles({ target: { files: dt.files } });
+            return;
+          }
+        }
+      }
+      const txt = e.clipboardData && e.clipboardData.getData('text');
+      if (txt && /https?:\/\//i.test(txt)) {
+        openPostModal(appState.activeGalleryTag);
+        const clean = extractFirstUrl(txt);
+        document.getElementById('post-url-input').value = clean;
+        fetchUrlPreview(clean);
+      }
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      const inInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+      if (e.key === 'Escape') {
+        if (inInput) { document.activeElement.blur(); return; }
+        closeCardModal();
+        closePostModal();
+        closeTagModal();
+        closeShareModal();
+        if (appState.selectedPinIds.size > 0) clearSelection();
+        if (appState.activeGalleryTag) closeGalleryPage();
+        return;
+      }
+      if (inInput || e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        const s = document.getElementById('canvas-search-input');
+        if (s && s.offsetParent !== null) s.focus();
+        else toggleMobileSearch(true);
+      } else if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        openPostModal(appState.activeGalleryTag);
+      } else if (e.key.toLowerCase() === 't' && !appState.activeGalleryTag) {
+        e.preventDefault();
+        tidyBoard();
+      } else if (e.key.toLowerCase() === 'f' && !appState.activeGalleryTag) {
+        e.preventDefault();
+        centerBoard();
+      }
+    });
+
+    // Direct OS File Drag & Drop onto Canvas / Hubs
+    const dropOverlay = document.getElementById('canvas-drop-overlay');
+    let dragCounter = 0;
+
+    window.addEventListener('dragenter', (e) => {
+      if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) {
+        dragCounter++;
+        dropOverlay.classList.add('active');
+      }
+    });
+
+    window.addEventListener('dragleave', () => {
+      dragCounter = Math.max(0, dragCounter - 1);
+      if (dragCounter === 0) dropOverlay.classList.remove('active');
+    });
+
+    window.addEventListener('dragover', (e) => {
+      if (e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')) {
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener('drop', async (e) => {
+      if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+      e.preventDefault();
+      dragCounter = 0;
+      dropOverlay.classList.remove('active');
+
+      const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'));
+      if (!files.length) return;
+
+      const wx = (e.clientX - cam.x) / cam.zoom;
+      const wy = (e.clientY - cam.y) / cam.zoom;
+      const targetHub = findNearestHubAt(wx, wy, 260) || Object.values(appState.hubs)[0];
+      if (!targetHub) return;
+
+      toast(`⏳ Adding ${files.length} image(s) to ${targetHub.id}...`);
+      const staged = [];
+      for (const f of files) {
+        const img = await compressImageFile(f);
+        if (img) {
+          staged.push({
+            img,
+            title: f.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 42) || 'Dropped Idea',
+            url: ''
+          });
+        }
+      }
+
+      if (staged.length) {
+        let savedAuthor = 'Member';
+        try { savedAuthor = localStorage.getItem(AUTHOR_STORAGE_KEY) || 'Member'; } catch (err) {}
+        placeNewPinsAroundHub(staged, targetHub.id, '', savedAuthor, '');
+        renderAll();
+        panToPoint(targetHub.x, targetHub.y, 0.85);
+        toast(`✨ Dropped ${staged.length} image(s) onto ${targetHub.id}!`);
+      }
+    });
+
+    // -------------------------------------------------------------------------
+    // 9. GALLERY, LIGHTBOX MODAL, COMMENTS & UNDOABLE DELETE
+    // -------------------------------------------------------------------------
+    function openGalleryPage(tag) {
+      const hub = appState.hubs[tag];
+      if (!hub) return;
+      appState.activeGalleryTag = tag;
+
+      document.getElementById('gallery-banner').style.backgroundColor = hub.color;
+      document.getElementById('gallery-title').textContent = hub.id;
+
+      const driveBtn = document.getElementById('gallery-drive-link');
+      if (hub.gdrive) {
+        driveBtn.href = hub.gdrive;
+        driveBtn.classList.remove('hidden');
+      } else {
+        driveBtn.classList.add('hidden');
+      }
+
+      renderGalleryGrid();
+      const page = document.getElementById('gallery-page');
+      page.classList.remove('hidden');
+      page.classList.add('flex');
+    }
+
+    function closeGalleryPage() {
+      appState.activeGalleryTag = null;
+      const page = document.getElementById('gallery-page');
+      page.classList.add('hidden');
+      page.classList.remove('flex');
+    }
+
+    function renderGalleryGrid() {
+      const tag = appState.activeGalleryTag;
+      if (!tag) return;
+      const list = appState.pins.filter((p) => p.hashtag === tag);
+      if (appState.gallerySort === 'hype') {
+        list.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      } else {
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      }
+
+      document.getElementById('gallery-count').textContent = `${list.length} ${list.length === 1 ? 'PIN' : 'PINS'}`;
+
+      const grid = document.getElementById('gallery-grid');
+      if (!list.length) {
+        grid.innerHTML = `
+          <div class="col-span-full nb-surface rounded-3xl p-10 text-center">
+            <p class="font-poplar text-2xl mb-1">NO PINS IN ${esc(tag)} YET</p>
+            <p class="font-mono text-xs opacity-70">Click "+ ADD HERE" above to post the first visual idea.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map((p) => {
+        const hype = getHypeBadgeProps(p);
+        const cCount = Array.isArray(p.comments) ? p.comments.length : 0;
+        return `
+          <div onclick="openCardModal('${esc(p.id)}')" class="nb-surface rounded-2xl p-3 cursor-pointer nb-btn flex flex-col justify-between">
+            <div>
+              <div class="w-full h-48 rounded-xl bg-ink border-2 border-ink overflow-hidden mb-2.5">
+                <img src="${esc(p.img)}" alt="${esc(p.title)}" onerror="fallbackImg(this)" class="w-full h-full object-cover" />
+              </div>
+              <h4 class="font-bold text-sm leading-snug">${esc(p.title)}</h4>
+              ${p.notes ? `<p class="text-xs opacity-75 mt-1 line-clamp-2">${esc(p.notes)}</p>` : ''}
+            </div>
+            <div class="mt-2 pt-2 border-t border-current/15 flex items-center justify-between font-mono text-[10px]">
+              <span class="truncate">by ${esc(p.author || 'Member')}${cCount ? ` • 💬 ${cCount}` : ''}</span>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" onclick="sharePinToWhatsApp('${esc(p.id)}', event)"
+                  title="Send pin to WhatsApp group"
+                  class="px-2 py-0.5 rounded-full bg-[#25D366] text-ink border border-ink font-bold">
+                  💬
+                </button>
+                <button type="button" data-hype-pin="${esc(p.id)}"
+                  onclick="cyclePinHype('${esc(p.id)}', event)"
+                  title="${hype.title}"
+                  class="hype-pill px-2 py-0.5 rounded-full border font-bold ${hype.cls}">
+                  ${hype.icon} ${p.likes || 0}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function syncCardModalHypeUI(pin) {
+      const mine = getMyPinHype(pin.id);
+      const btn = document.getElementById('card-modal-hype-btn');
+      const icon = document.getElementById('card-modal-hype-icon');
+      const count = document.getElementById('card-modal-likes');
+      const tag = document.getElementById('card-modal-hype-tag');
+      const hint = document.getElementById('card-modal-hype-hint');
+
+      count.textContent = pin.likes || 0;
+      btn.classList.remove('bg-acid', 'bg-raspberry', 'bg-white', 'text-ink', 'text-white');
+
+      if (mine === 2) {
+        btn.classList.add('bg-raspberry', 'text-white');
+        icon.textContent = '🔥🔥';
+        tag.textContent = 'MEGA HYPED (2x)';
+        hint.textContent = 'You gave 2x hype!';
+      } else if (mine === 1) {
+        btn.classList.add('bg-acid', 'text-ink');
+        icon.textContent = '🔥';
+        tag.textContent = 'HYPED (1x)';
+        hint.textContent = 'Tap 🔥 again for 2x!';
+      } else {
+        btn.classList.add('bg-white', 'text-ink');
+        icon.textContent = '🔥';
+        tag.textContent = 'HYPE';
+        hint.textContent = '';
+      }
+    }
+
+    function renderCardModalComments(pin) {
+      const listEl = document.getElementById('card-modal-comments-list');
+      const countEl = document.getElementById('card-modal-comments-count');
+      const comments = Array.isArray(pin.comments) ? pin.comments : [];
+      countEl.textContent = `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}`;
+
+      if (!comments.length) {
+        listEl.innerHTML = `<p class="font-mono text-[10px] opacity-60 italic">No feedback notes yet — drop the first comment below.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = comments.map((c) => `
+        <div class="nb-surface-sm rounded-xl px-2.5 py-1.5 flex items-baseline justify-between gap-2">
+          <div>
+            <span class="font-bold text-[11px]">${esc(c.author || 'Member')}:</span>
+            <span class="text-xs ml-1">${esc(c.text)}</span>
+          </div>
+        </div>
+      `).join('');
+      listEl.scrollTop = listEl.scrollHeight;
+    }
+
+    function submitPinComment(e) {
+      e.preventDefault();
+      const pin = appState.pins.find((p) => p.id === appState.activeCardId);
+      if (!pin) return;
+      const inp = document.getElementById('card-modal-comment-input');
+      const text = inp.value.trim();
+      if (!text) return;
+
+      let author = 'Member';
+      try { author = localStorage.getItem(AUTHOR_STORAGE_KEY) || 'Member'; } catch (err) {}
+
+      if (!Array.isArray(pin.comments)) pin.comments = [];
+      pin.comments.push({ author, text, ts: Date.now() });
+      inp.value = '';
+
+      renderCardModalComments(pin);
+      updateSinglePinDOM(pin);
+      if (appState.activeGalleryTag) renderGalleryGrid();
+      broadcastSync('UPDATE_PIN', pin);
+      toast('💬 Feedback added!');
+    }
+
+    let deleteConfirmArmed = false;
+    function openCardModal(pinId) {
+      const pin = appState.pins.find((p) => p.id === pinId);
+      if (!pin) return;
+      appState.activeCardId = pinId;
+      deleteConfirmArmed = false;
+      const delBtn = document.getElementById('card-modal-delete-btn');
+      if (delBtn) delBtn.textContent = 'DELETE';
+
+      const sel = document.getElementById('card-modal-tag-select');
+      sel.innerHTML = Object.keys(appState.hubs).map((tag) => `
+        <option value="${esc(tag)}" ${tag === pin.hashtag ? 'selected' : ''}>${esc(tag)}</option>
+      `).join('');
+
+      document.getElementById('card-modal-img').src = pin.img;
+      document.getElementById('card-modal-title-input').value = pin.title || '';
+      document.getElementById('card-modal-author-input').value = pin.author || 'Member';
+      document.getElementById('card-modal-notes-input').value = pin.notes || '';
+      document.getElementById('card-modal-link').href = pin.url || pin.img;
+      syncCardModalHypeUI(pin);
+      renderCardModalComments(pin);
+
+      const modal = document.getElementById('card-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function saveActiveCardDetails() {
+      const pin = appState.pins.find((p) => p.id === appState.activeCardId);
+      if (!pin) return;
+      const newTitle = document.getElementById('card-modal-title-input').value.trim();
+      const newAuthor = document.getElementById('card-modal-author-input').value.trim();
+      const newNotes = document.getElementById('card-modal-notes-input').value.trim();
+      if (newTitle) pin.title = newTitle;
+      if (newAuthor) pin.author = newAuthor;
+      pin.notes = newNotes;
+      updateSinglePinDOM(pin);
+      if (appState.activeGalleryTag) renderGalleryGrid();
+      broadcastSync('UPDATE_PIN', pin);
+      toast('✏️ Saved card details!');
+    }
+
+    function closeCardModal() {
+      appState.activeCardId = null;
+      deleteConfirmArmed = false;
+      const modal = document.getElementById('card-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function changePinHashtag(newTag) {
+      const pin = appState.pins.find((p) => p.id === appState.activeCardId);
+      if (!pin) return;
+      pin.hashtag = newTag;
+      const hub = appState.hubs[newTag];
+      if (hub) {
+        const angle = Math.random() * Math.PI * 2;
+        pin.x = Math.round(hub.x + Math.cos(angle) * 265);
+        pin.y = Math.round(hub.y + Math.sin(angle) * 265);
+      }
+      broadcastSync('UPDATE_PIN', pin);
+      renderAll();
+      toast(`Moved to ${newTag}!`);
+    }
+
+    function deleteActiveCard() {
+      if (!appState.activeCardId) return;
+      const delBtn = document.getElementById('card-modal-delete-btn');
+      if (!deleteConfirmArmed) {
+        deleteConfirmArmed = true;
+        if (delBtn) delBtn.textContent = 'SURE? TAP AGAIN';
+        setTimeout(() => {
+          deleteConfirmArmed = false;
+          if (delBtn) delBtn.textContent = 'DELETE';
+        }, 3000);
+        return;
+      }
+
+      const id = appState.activeCardId;
+      const removedPin = appState.pins.find((p) => p.id === id);
+      if (removedPin) {
+        appState.lastDeletedBackup = { type: 'pins', items: [Object.assign({}, removedPin)] };
+      }
+      appState.pins = appState.pins.filter((p) => p.id !== id);
+      closeCardModal();
+      broadcastSync('DELETE_PIN', id);
+      renderAll();
+      toast('🗑️ Pin deleted', 'UNDO ↺', undoLastDelete);
+    }
+
+    function undoLastDelete() {
+      if (!appState.lastDeletedBackup) return;
+      const b = appState.lastDeletedBackup;
+      appState.lastDeletedBackup = null;
+      if (b.type === 'pins' && Array.isArray(b.items)) {
+        b.items.forEach((pin) => {
+          if (!appState.pins.some((p) => p.id === pin.id)) {
+            appState.pins.unshift(pin);
+            broadcastSync('ADD_PIN', pin);
+          }
+        });
+        renderAll();
+        toast('✨ Restored deleted pin(s)!');
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // 10. WHATSAPP GROUP SHARING & DEEP-LINKING ENGINE
+    // -------------------------------------------------------------------------
+    function getBoardBaseUrl() {
+      const u = new URL(window.location.href);
+      u.hash = '';
+      return u.toString();
+    }
+
+    function buildPinWhatsAppMessage(pin) {
+      const baseUrl = getBoardBaseUrl();
+      const pinJumpUrl = `${baseUrl}#pin=${encodeURIComponent(pin.id)}`;
+      const lines = [
+        `🎨 *ORATORS' CLUB — imagine*`,
+        `📌 *${pin.title}* (${pin.hashtag})`,
+        `👤 Shared by: ${pin.author || 'Member'} | 🔥 Hype: ${pin.likes || 0}`,
+        pin.notes ? `📝 Note: ${pin.notes}` : '',
+        pin.url && /^https?:\/\//i.test(pin.url) ? `🔗 Ref Link: ${pin.url}` : '',
+        `👀 Open on Moodboard: ${pinJumpUrl}`,
+        ``,
+        `Thoughts on this idea? 👇`
+      ].filter((line, idx, arr) => !(line === '' && arr[idx - 1] === ''));
+      return lines.join('\n');
+    }
+
+    function openWhatsAppWithText(text) {
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    function sharePinToWhatsApp(pinId, event = null) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      const pin = appState.pins.find((p) => p.id === pinId);
+      if (!pin) return;
+      const msg = buildPinWhatsAppMessage(pin);
+      openWhatsAppWithText(msg);
+      toast('💬 Opening WhatsApp to share pin!');
+    }
+
+    function copyPinWhatsAppNote(pinId) {
+      const pin = appState.pins.find((p) => p.id === pinId);
+      if (!pin) return;
+      const msg = buildPinWhatsAppMessage(pin);
+      copyTextToClipboard(msg);
+      toast('📋 WhatsApp discussion note copied!');
+    }
+
+    function shareWhatsAppDigest(filterTag = 'ALL') {
+      let list = [...appState.pins];
+      if (filterTag && filterTag !== 'ALL') {
+        list = list.filter((p) => p.hashtag === filterTag);
+      }
+      list.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+
+      const baseUrl = getBoardBaseUrl();
+      const header = filterTag && filterTag !== 'ALL'
+        ? `🎨 *ORATORS' CLUB — ${filterTag} Ideas (${list.length})*`
+        : `🎨 *ORATORS' CLUB — Saved Moodboard Ideas (${list.length})*`;
+
+      if (!list.length) {
+        toast('⚠️ No saved pins in this category yet');
+        return;
+      }
+
+      const itemsText = list.slice(0, 15).map((p, i) => {
+        const note = p.notes ? `\n   📝 _${p.notes}_` : '';
+        const ref = (p.url && /^https?:\/\//i.test(p.url)) ? `\n   🔗 ${p.url}` : '';
+        return `${i + 1}. *${p.title}* [${p.hashtag}] — 🔥 ${p.likes || 0} (by ${p.author || 'Member'})${note}${ref}`;
+      }).join('\n');
+
+      const fullMsg = [
+        header,
+        ``,
+        itemsText,
+        ``,
+        `🌐 *Live Moodboard:* ${baseUrl}`,
+        `Which ones should we finalize? 💬`
+      ].join('\n');
+
+      openWhatsAppWithText(fullMsg);
+      closeShareModal();
+      toast('💬 Opening WhatsApp with saved pins!');
+    }
+
+    // -------------------------------------------------------------------------
+    // 11. HASHTAG & GOOGLE DRIVE MANAGER (WITH TWO-STEP DELETE CONFIRM)
+    // -------------------------------------------------------------------------
+    let armedHubDeleteTag = null;
+
+    function openTagModal(editTag = null) {
+      const modal = document.getElementById('tag-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      armedHubDeleteTag = null;
+
+      if (editTag && appState.hubs[editTag]) {
+        const h = appState.hubs[editTag];
+        appState.editingTagId = h.id;
+        document.getElementById('tag-name-input').value = h.id;
+        document.getElementById('tag-shape-input').value = h.shape;
+        document.getElementById('tag-color-input').value = h.color;
+        document.getElementById('tag-drive-input').value = h.gdrive || '';
+      } else {
+        appState.editingTagId = null;
+        document.getElementById('tag-name-input').value = '';
+        document.getElementById('tag-shape-input').value = 'oval';
+        document.getElementById('tag-color-input').value = '#CBFF54';
+        document.getElementById('tag-drive-input').value = '';
+      }
+
+      renderTagManagerList();
+    }
+
+    function closeTagModal() {
+      const modal = document.getElementById('tag-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function setTagColor(hex) {
+      document.getElementById('tag-color-input').value = hex;
+    }
+
+    function saveTagForm(e) {
+      e.preventDefault();
+      let name = document.getElementById('tag-name-input').value.trim().replace(/\s+/g, '');
+      if (!name) return;
+      if (!name.startsWith('#')) name = '#' + name;
+
+      const shape = document.getElementById('tag-shape-input').value;
+      const color = document.getElementById('tag-color-input').value;
+      const gdrive = document.getElementById('tag-drive-input').value.trim();
+
+      if (appState.editingTagId && appState.editingTagId !== name) {
+        const old = appState.hubs[appState.editingTagId];
+        delete appState.hubs[appState.editingTagId];
+        appState.pins.forEach((p) => { if (p.hashtag === appState.editingTagId) p.hashtag = name; });
+        appState.hubs[name] = { id: name, shape, color, gdrive, x: old ? old.x : 0, y: old ? old.y : 0 };
+        broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+      } else if (appState.hubs[name]) {
+        appState.hubs[name] = Object.assign(appState.hubs[name], { shape, color, gdrive });
+        broadcastSync('UPSERT_HUB', appState.hubs[name]);
+      } else {
+        const count = Object.keys(appState.hubs).length;
+        const angle = count * 2.39996;
+        appState.hubs[name] = {
+          id: name,
+          shape,
+          color,
+          gdrive,
+          x: Math.round(Math.cos(angle) * 580),
+          y: Math.round(Math.sin(angle) * 460)
+        };
+        broadcastSync('UPSERT_HUB', appState.hubs[name]);
+      }
+
+      appState.editingTagId = null;
+      renderAll();
+      closeTagModal();
+      panToPoint(appState.hubs[name].x, appState.hubs[name].y, 0.9);
+      toast(`✅ Saved ${name}`);
+    }
+
+    function renderTagManagerList() {
+      const box = document.getElementById('tag-list-container');
+      const hubs = Object.values(appState.hubs);
+
+      box.innerHTML = hubs.map((h) => {
+        const count = appState.pins.filter((p) => p.hashtag === h.id).length;
+        const isArmed = armedHubDeleteTag === h.id;
+        return `
+          <div class="flex items-center justify-between gap-2 nb-muted p-2.5 rounded-xl border border-current/15">
+            <div class="flex items-center gap-2 truncate">
+              <span class="w-4 h-4 rounded-full border border-ink shrink-0" style="background-color:${h.color}"></span>
+              <span class="font-poplar text-sm">${esc(h.id)}</span>
+              <span class="font-mono text-[10px] opacity-65">(${count})</span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="openTagModal('${esc(h.id)}')" class="px-2 py-1 nb-surface-sm rounded-lg font-mono text-[10px] font-bold">EDIT</button>
+              ${hubs.length > 1 ? `
+                <button type="button" onclick="deleteHashtagHub('${esc(h.id)}')" class="px-2 py-1 bg-raspberry text-white rounded-lg font-mono text-[10px] font-bold border border-ink">
+                  ${isArmed ? 'SURE?' : 'DELETE'}
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteHashtagHub(tag) {
+      if (appState.boardSafetyLock) {
+        toast('🔒 Board Safety Lock is ON (unlock in Share menu to delete hubs)');
+        return;
+      }
+      if (armedHubDeleteTag !== tag) {
+        armedHubDeleteTag = tag;
+        renderTagManagerList();
+        return;
+      }
+      armedHubDeleteTag = null;
+
+      const keys = Object.keys(appState.hubs).filter((k) => k !== tag);
+      if (!keys.length) return;
+      const fallbackTag = keys[0];
+      const fallbackHub = appState.hubs[fallbackTag];
+
+      appState.pins.forEach((p, idx) => {
+        if (p.hashtag === tag) {
+          p.hashtag = fallbackTag;
+          p.x = Math.round(fallbackHub.x + Math.cos(idx) * 265);
+          p.y = Math.round(fallbackHub.y + Math.sin(idx) * 265);
+        }
+      });
+
+      delete appState.hubs[tag];
+      if (appState.activeGalleryTag === tag) closeGalleryPage();
+      broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+      renderTagManagerList();
+      renderAll();
+      toast(`🗑️ Deleted ${tag} (pins moved to ${fallbackTag})`);
+    }
+
+    // -------------------------------------------------------------------------
+    // 12. SHARE, BACKUP & PROTECTED RESET TOOLS
+    // -------------------------------------------------------------------------
+    let resetConfirmArmed = false;
+
+    function openShareModal() {
+      resetConfirmArmed = false;
+      const rBtn = document.getElementById('reset-demo-btn');
+      if (rBtn) rBtn.textContent = '↺ Reset';
+
+      const sel = document.getElementById('wa-digest-filter');
+      if (sel) {
+        const hubs = Object.values(appState.hubs);
+        sel.innerHTML = `<option value="ALL">All Saved Pins (${appState.pins.length} total — Top Hyped First)</option>` +
+          hubs.map((h) => {
+            const c = appState.pins.filter((p) => p.hashtag === h.id).length;
+            return `<option value="${esc(h.id)}">${esc(h.id)} (${c} pins)</option>`;
+          }).join('');
+      }
+      const modal = document.getElementById('share-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeShareModal() {
+      const modal = document.getElementById('share-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function copyTextToClipboard(str) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(str).catch(() => {});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = str;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+    }
+
+    function copyLiveLink() {
+      const u = new URL(window.location.href);
+      try {
+        const lightPins = appState.pins.slice(0, 25).map((p) => Object.assign({}, p, {
+          img: (p.img && p.img.length < 12000) ? p.img : (p.url || makeTypographicPoster(p.title))
+        }));
+        const snap = btoa(unescape(encodeURIComponent(JSON.stringify({ hubs: appState.hubs, pins: lightPins }))));
+        u.hash = 'snap=' + snap;
+      } catch (e) {}
+
+      copyTextToClipboard(u.toString());
+      closeShareModal();
+      toast('🔗 Live Share Link copied to clipboard!');
+    }
+
+    function exportBackupJSON() {
+      const blob = new Blob([JSON.stringify({ hubs: appState.hubs, pins: appState.pins }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'orators-imagine-board.json';
+      a.click();
+      closeShareModal();
+      toast('📦 Board exported as JSON!');
+    }
+
+    function importBackupJSON(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          const clean = sanitizeBoardData(parsed);
+          appState.hubs = clean.hubs;
+          appState.pins = clean.pins;
+          broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+          renderAll();
+          centerBoard();
+          closeShareModal();
+          toast('📥 Board imported successfully!');
+        } catch (err) {
+          toast('⚠️ Invalid JSON backup file');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetDefaultDemo() {
+      if (appState.boardSafetyLock) {
+        toast('🔒 Board Safety Lock is ON (unlock first to reset)');
+        return;
+      }
+      const rBtn = document.getElementById('reset-demo-btn');
+      if (!resetConfirmArmed) {
+        resetConfirmArmed = true;
+        if (rBtn) rBtn.textContent = 'SURE? TAP';
+        return;
+      }
+      resetConfirmArmed = false;
+
+      const def = getInitialBoard();
+      appState.hubs = def.hubs;
+      appState.pins = def.pins;
+      appState.myHypes = {};
+      saveMyHypes();
+      broadcastSync('FULL_SYNC', { hubs: appState.hubs, pins: appState.pins });
+      renderAll();
+      centerBoard();
+      closeShareModal();
+      toast('↺ Default Demo Restored');
+    }
+
+    // -------------------------------------------------------------------------
+    // 13. UTILITIES & BOOTSTRAP (WITH ASYNC INDEXEDDB HYDRATION)
+    // -------------------------------------------------------------------------
+    let toastTimeout = null;
+    function toast(msg, actionLabel = null, actionFn = null) {
+      const el = document.getElementById('toast-banner');
+      const txt = document.getElementById('toast-text');
+      const actBtn = document.getElementById('toast-action-btn');
+
+      txt.textContent = msg;
+      if (actionLabel && typeof actionFn === 'function') {
+        actBtn.textContent = actionLabel;
+        actBtn.classList.remove('hidden');
+        actBtn.onclick = () => {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+          actionFn();
+        };
+      } else {
+        actBtn.classList.add('hidden');
+        actBtn.onclick = null;
+      }
+
+      el.classList.remove('hidden');
+      el.classList.add('flex');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }, actionLabel ? 5200 : 2600);
+    }
+
+    function esc(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function handleDeepLinkPin() {
+      try {
+        const m = (window.location.hash || '').match(/pin=([^&]+)/);
+        if (m && m[1]) {
+          const targetId = decodeURIComponent(m[1]);
+          const found = appState.pins.find((p) => p.id === targetId);
+          if (found) {
+            panToPoint(found.x, found.y, 0.95);
+            openCardModal(found.id);
+          }
+        }
+      } catch (e) {}
+    }
+
+    window.addEventListener('hashchange', handleDeepLinkPin);
+
+    (async function initApp() {
+      const savedSync = loadBoardLocallySync();
+      if (savedSync) {
+        appState.hubs = savedSync.hubs;
+        appState.pins = savedSync.pins;
+      } else {
+        const def = getInitialBoard();
+        appState.hubs = def.hubs;
+        appState.pins = def.pins;
+      }
+      renderAll();
+      centerBoard();
+      handleDeepLinkPin();
+      startLiveRelay();
+
+      // Hydrate full high-res images from IndexedDB if available
+      const idbData = await loadBoardFromIDB();
+      if (idbData && !appState.cloudActive) {
+        const clean = sanitizeBoardData(idbData);
+        appState.hubs = clean.hubs;
+        appState.pins = clean.pins;
+        renderAll();
+      }
+    })();
+  </script>
+
+  <!-- ===================================================================== -->
+  <!-- PER-PIN CLOUD FIRESTORE SYNC (SERVER-ENFORCED 2x HYPE MAP & COMMENTS) -->
+  <!-- ===================================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore, doc, collection, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    (async function initCloudFirestore() {
+      try {
+        const setup = window.FIREBASE_SETUP || {};
+        const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config)
+          ? JSON.parse(__firebase_config)
+          : setup.config;
+
+        if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes('PASTE_YOUR')) {
+          return;
+        }
+
+        const appId = (typeof __app_id !== 'undefined' && __app_id)
+          ? __app_id
+          : (setup.appId || 'orators-imagine-app');
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        if (!auth.currentUser) return;
+        window.__cloudUid = auth.currentUser.uid;
+        disableLiveRelayForCloud();
+
+        const syncLabel = document.getElementById('sync-label');
+        if (syncLabel) syncLabel.textContent = 'CLOUD DB LIVE';
+
+        const boardDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'boards', 'main_board');
+        const pinsColRef = collection(boardDocRef, 'pins');
+
+        const cleanPin = (p) => ({
+          id: String(p.id),
+          hashtag: String(p.hashtag || '#Posterdesign'),
+          title: String(p.title || 'Club Visual Idea'),
+          author: String(p.author || 'Member'),
+          notes: String(p.notes || ''),
+          comments: Array.isArray(p.comments) ? p.comments.slice(0, 50) : [],
+          url: String(p.url || ''),
+          img: String(p.img || ''),
+          x: Math.round(Number(p.x) || 0),
+          y: Math.round(Number(p.y) || 0),
+          likes: Math.max(0, Number(p.likes) || 0),
+          baseLikes: Math.max(0, Number(p.baseLikes) || 0),
+          hypeMap: (p.hypeMap && typeof p.hypeMap === 'object') ? p.hypeMap : {},
+          createdAt: Number(p.createdAt) || Date.now()
+        });
+
+        window.__cloudPush = async (action, payload) => {
+          if (!auth.currentUser) return;
+          try {
+            if (action === 'ADD_PIN' && payload) {
+              await setDoc(doc(pinsColRef, payload.id), cleanPin(payload));
+            } else if (action === 'UPDATE_PIN' && payload) {
+              await setDoc(doc(pinsColRef, payload.id), cleanPin(payload), { merge: true });
+            } else if (action === 'HYPE_DELTA' && payload) {
+              await setDoc(doc(pinsColRef, payload.id), {
+                likes: Math.max(0, Number(payload.likes) || 0),
+                baseLikes: Math.max(0, Number(payload.baseLikes) || 0),
+                hypeMap: payload.hypeMap || {}
+              }, { merge: true });
+            } else if (action === 'MOVE_NODE' && payload) {
+              if (payload.type === 'pin') {
+                await updateDoc(doc(pinsColRef, payload.id), {
+                  x: Math.round(payload.x),
+                  y: Math.round(payload.y)
+                });
+              } else if (payload.type === 'hub') {
+                await setDoc(boardDocRef, {
+                  hubsJson: JSON.stringify(appState.hubs),
+                  updatedAt: Date.now()
+                }, { merge: true });
+              }
+            } else if (action === 'DELETE_PIN' && payload) {
+              await deleteDoc(doc(pinsColRef, payload));
+            } else if (action === 'UPSERT_HUB' || action === 'DELETE_HUB') {
+              await setDoc(boardDocRef, {
+                hubsJson: JSON.stringify(appState.hubs),
+                updatedAt: Date.now()
+              }, { merge: true });
+            } else if (action === 'FULL_SYNC') {
+              const existingSnap = await getDocs(pinsColRef);
+              const validIds = new Set(appState.pins.map((p) => String(p.id)));
+              const batch = writeBatch(db);
+              batch.set(boardDocRef, {
+                hubsJson: JSON.stringify(appState.hubs),
+                updatedAt: Date.now()
+              }, { merge: true });
+              existingSnap.forEach((docSnap) => {
+                if (!validIds.has(docSnap.id)) {
+                  batch.delete(docSnap.ref);
+                }
+              });
+              appState.pins.forEach((p) => {
+                batch.set(doc(pinsColRef, p.id), cleanPin(p));
+              });
+              await batch.commit();
+            }
+          } catch (err) {
+            console.warn('Firestore sync error:', err);
+          }
+        };
+
+        onSnapshot(boardDocRef, (snap) => {
+          if (!snap.exists()) {
+            window.__cloudPush('FULL_SYNC');
+            return;
+          }
+          const data = snap.data();
+          if (data && data.hubsJson) {
+            try {
+              appState.hubs = JSON.parse(data.hubsJson);
+              saveBoardLocally();
+              renderAll();
+            } catch (e) {}
+          }
+        });
+
+        onSnapshot(pinsColRef, (querySnap) => {
+          if (querySnap.empty && appState.pins.length > 0) return;
+          const livePins = [];
+          querySnap.forEach((docSnap) => {
+            livePins.push(docSnap.data());
+          });
+          livePins.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          appState.pins = livePins;
+          saveBoardLocally();
+          renderAll();
+          if (appState.activeCardId) {
+            const active = appState.pins.find((p) => p.id === appState.activeCardId);
+            if (active) {
+              syncCardModalHypeUI(active);
+              renderCardModalComments(active);
+            }
+          }
+          handleDeepLinkPin();
+        });
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
